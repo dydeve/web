@@ -1,0 +1,60 @@
+def vJavaLang = '1.8'
+
+buildscript {
+    ext {
+        springBootVersion = '1.2.3.RELEASE'
+        springVersion = '4.1.6.RELEASE'
+    }
+    repositories {
+        mavenLocal()
+        jcenter()
+        //maven { url 'http://nexus.tuniu.org/nexus/content/groups/public/' }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+configure(allprojects) {
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+
+    version = '1.1.2'
+
+    idea.module {
+        excludeDirs += [
+                file('bin'),      // containing build artifacts from Eclipse (if any)
+                file('work'),     // containing transient artifacts used by embedded Tomcat
+                file('logs'),     // containing app logs written by embedded Tomcat
+                file('data'),     // containing logs and data written by elasticsearch
+                file('.settings') // containing intentionally checked-in Eclipse metadata
+        ]
+    }
+}
+
+apply plugin: 'java'
+
+
+dependencies {
+
+    compile "org.springframework.boot:spring-boot-starter:${springBootVersion}"
+    compile "org.springframework:spring-web:${springVersion}"
+    compile "org.springframework:spring-webmvc:${springVersion}"
+    compile 'com.google.protobuf:protobuf-java:2.6.1'
+    compile 'com.googlecode.protobuf-java-format:protobuf-java-format:1.2'
+
+    // optional dependencies below
+    compile 'org.apache.tomcat.embed:tomcat-embed-core:8.0.20'
+
+    testCompile 'org.spockframework:spock-spring:1.0-groovy-2.4'
+    testCompile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+    testCompile "cglib:cglib-nodep:3.1"
+    testCompile("com.athaydes:spock-reports:1.2.12") {
+        transitive = false // this avoids affecting your version of Groovy/Spock
+    }
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
