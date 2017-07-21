@@ -15,6 +15,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface WebObject {
 
-    boolean required() default false;
+    boolean required() default true;
 
 }

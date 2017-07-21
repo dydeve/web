@@ -12,14 +12,10 @@ import java.util.List;
  * Created by yuduy on 2017/7/21.
  */
 @SpringBootApplication
-public class Application extends WebMvcConfigurerAdapter {
+public class Application {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
 
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        argumentResolvers.add(new WebObjectMethodArgumentResolver());
-    }
 }
