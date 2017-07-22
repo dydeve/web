@@ -1,15 +1,21 @@
 package com.dydeve.web.handler;
 
+import com.alibaba.fastjson.JSON;
+import com.dydeve.web.handler.annotation.JsonBy;
 import com.dydeve.web.handler.annotation.RequestJson;
 import com.dydeve.web.handler.annotation.ResponseJson;
+import com.dydeve.web.holder.EnvironmentHolder;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Conventions;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -20,8 +26,6 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -35,10 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Resolves method arguments annotated with {@code @RequestJson} and handles return
@@ -54,16 +55,34 @@ import java.util.Set;
  * Created by dy on 2017/7/21.
  */
 
-public class RequestResponseJsonMethodProcessor extends AbstractMethodProcessor implements HandlerMethodArgumentResolver, HandlerMethodReturnValueHandler {
+public class RequestResponseJsonMethodProcessor extends AbstractMessageConverterMethodProcessor implements Validator, InitializingBean {
+
+    int globalJsonBy;
 
     private HttpMessageConverter<?> httpMessageConverter;
 
-    public RequestResponseJsonMethodProcessor(HttpMessageConverter<?> messageConverter) {
-        this.httpMessageConverter = messageConverter;
+    public RequestResponseJsonMethodProcessor(List<HttpMessageConverter<?>> messageConverters) {
+        super(messageConverters);
+        httpMessageConverter = messageConverters.get(0);
+    }
+
+    public RequestResponseJsonMethodProcessor(List<HttpMessageConverter<?>> messageConverters,
+                                              ContentNegotiationManager contentNegotiationManager) {
+
+        super(messageConverters, contentNegotiationManager);
+        httpMessageConverter = messageConverters.get(0);
+    }
+
+    public RequestResponseJsonMethodProcessor(List<HttpMessageConverter<?>> messageConverters,
+                                              ContentNegotiationManager contentNegotiationManager, List<Object> responseBodyAdvice) {
+
+        super(messageConverters, contentNegotiationManager, responseBodyAdvice);
+        httpMessageConverter = messageConverters.get(0);
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
+
         return parameter.hasParameterAnnotation(RequestJson.class);
     }
 
@@ -83,7 +102,7 @@ public class RequestResponseJsonMethodProcessor extends AbstractMethodProcessor 
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
-        Object arg = readWithMessageConverters(webRequest, parameter, parameter.getGenericParameterType());
+        Object arg = readFromHttpRequest(webRequest, parameter, parameter.getGenericParameterType());
         String name = Conventions.getVariableNameForParameter(parameter);
         WebDataBinder binder = binderFactory.createBinder(webRequest, arg, name);
         if (arg != null) {
@@ -95,6 +114,27 @@ public class RequestResponseJsonMethodProcessor extends AbstractMethodProcessor 
         mavContainer.addAttribute(BindingResult.MODEL_KEY_PREFIX + name, binder.getBindingResult());
         return arg;
     }
+
+    <T> Object readFromHttpRequest(NativeWebRequest webRequest, MethodParameter parameter,
+                                         Type paramType) throws IOException, HttpMediaTypeNotSupportedException {
+        RequestJson json = parameter.getParameterAnnotation(RequestJson.class);
+        String requestParam = json.value();
+
+        if (requestParam.length() == 0) {
+            return readWithMessageConverters(webRequest, parameter, parameter.getGenericParameterType());
+        }
+
+        String jsonString = webRequest.getParameter(requestParam);
+        JsonBy jsonBy = parameter.getMethodAnnotation(JsonBy.class);
+        if (jsonBy == null) {
+            jsonBy = AnnotationUtils.findAnnotation(parameter.getContainingClass(), JsonBy.class);
+        }
+
+        int jsonby = jsonBy != null ? jsonBy.value() : globalJsonBy;
+        return JSON.parseObject(jsonString, paramType);
+
+    }
+
 
     @Override
     protected <T> Object readWithMessageConverters(NativeWebRequest webRequest, MethodParameter methodParam,
@@ -115,6 +155,7 @@ public class RequestResponseJsonMethodProcessor extends AbstractMethodProcessor 
             inputStream.reset();
         }
         else {
+            // TODO: 2017/7/22 始终不能直接读流  修复
             final PushbackInputStream pushbackInputStream = new PushbackInputStream(inputStream);
             int b = pushbackInputStream.read();
             if (b == -1) {
@@ -132,7 +173,7 @@ public class RequestResponseJsonMethodProcessor extends AbstractMethodProcessor 
             };
         }
 
-        return readWithMessageConverters(inputMessage, methodParam, paramType);
+        return this.readWithMessageConverters(inputMessage, methodParam, paramType);
     }
 
     /**
@@ -160,15 +201,18 @@ public class RequestResponseJsonMethodProcessor extends AbstractMethodProcessor 
             throw new HttpMediaTypeNotSupportedException(ex.getMessage());
         }
 
-        Class<?> contextClass = methodParam.getContainingClass();
         Class<T> targetClass = (Class<T>)
                 ResolvableType.forMethodParameter(methodParam, targetType).resolve(Object.class);
 
         if (httpMessageConverter.canRead(targetClass, contentType)) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Reading [" + targetClass.getName() + "] as \"" +
+                        contentType + "\" using [" + httpMessageConverter + "]");
+            }
             return ((HttpMessageConverter<T>) httpMessageConverter).read(targetClass, inputMessage);
         }
 
-        throw new HttpMediaTypeNotSupportedException(contentType, null);
+        throw new HttpMediaTypeNotSupportedException(contentType, this.allSupportedMediaTypes);
     }
 
     private Object handleEmptyBody(MethodParameter param) {
@@ -178,6 +222,8 @@ public class RequestResponseJsonMethodProcessor extends AbstractMethodProcessor 
         return null;
     }
 
+    // TODO: 2017/7/22 do nothing 
+    
     @Override
     public void handleReturnValue(Object returnValue, MethodParameter returnType,
                                   ModelAndViewContainer mavContainer, NativeWebRequest webRequest)
@@ -189,89 +235,34 @@ public class RequestResponseJsonMethodProcessor extends AbstractMethodProcessor 
         writeWithMessageConverters(returnValue, returnType, webRequest);
     }
 
-    /**
-     * Writes the given return value to the given web request. Delegates to
-     * {@link #writeWithMessageConverters(Object, MethodParameter, ServletServerHttpRequest, ServletServerHttpResponse)}
-     */
-    protected <T> void writeWithMessageConverters(T returnValue, MethodParameter returnType, NativeWebRequest webRequest)
-            throws IOException, HttpMediaTypeNotAcceptableException {
-
-        ServletServerHttpRequest inputMessage = createInputMessage(webRequest);
-        ServletServerHttpResponse outputMessage = createOutputMessage(webRequest);
-        writeWithMessageConverters(returnValue, returnType, inputMessage, outputMessage);
+    @Override
+    public void validateIfApplicable(WebDataBinder binder, MethodParameter methodParam) {
+        Validator.super.validateIfApplicable(binder, methodParam);
     }
 
-    /**
-     * Writes the given return type to the given output message.
-     * @param returnValue the value to write to the output message
-     * @param returnType the type of the value
-     * @param inputMessage the input messages. Used to inspect the {@code Accept} header.
-     * @param outputMessage the output message to write to
-     * @throws IOException thrown in case of I/O errors
-     * @throws HttpMediaTypeNotAcceptableException thrown when the conditions indicated by {@code Accept} header on
-     * the request cannot be met by the message converters
-     */
-    @SuppressWarnings("unchecked")
-    protected <T> void writeWithMessageConverters(T returnValue, MethodParameter returnType,
-                                                  ServletServerHttpRequest inputMessage, ServletServerHttpResponse outputMessage)
-            throws IOException, HttpMediaTypeNotAcceptableException {
-
-        Class<?> returnValueClass = getReturnValueType(returnValue, returnType);
-        HttpServletRequest servletRequest = inputMessage.getServletRequest();
-        List<MediaType> requestedMediaTypes = getAcceptableMediaTypes(servletRequest);
-        List<MediaType> producibleMediaTypes = getProducibleMediaTypes(servletRequest, returnValueClass);
-
-        Set<MediaType> compatibleMediaTypes = new LinkedHashSet<MediaType>();
-        for (MediaType requestedType : requestedMediaTypes) {
-            for (MediaType producibleType : producibleMediaTypes) {
-                if (requestedType.isCompatibleWith(producibleType)) {
-                    compatibleMediaTypes.add(getMostSpecificMediaType(requestedType, producibleType));
-                }
-            }
-        }
-        if (compatibleMediaTypes.isEmpty()) {
-            if (returnValue != null) {
-                throw new HttpMediaTypeNotAcceptableException(producibleMediaTypes);
-            }
-            return;
-        }
-
-        List<MediaType> mediaTypes = new ArrayList<MediaType>(compatibleMediaTypes);
-        MediaType.sortBySpecificityAndQuality(mediaTypes);
-
-        MediaType selectedMediaType = null;
-        for (MediaType mediaType : mediaTypes) {
-            if (mediaType.isConcrete()) {
-                selectedMediaType = mediaType;
-                break;
-            }
-            else if (mediaType.equals(MediaType.ALL) || mediaType.equals(MEDIA_TYPE_APPLICATION)) {
-                selectedMediaType = MediaType.APPLICATION_OCTET_STREAM;
-                break;
-            }
-        }
-
-        if (selectedMediaType != null) {
-            selectedMediaType = selectedMediaType.removeQualityValue();
-            for (HttpMessageConverter<?> messageConverter : this.messageConverters) {
-                if (messageConverter.canWrite(returnValueClass, selectedMediaType)) {
-                    returnValue = this.adviceChain.invoke(returnValue, returnType, selectedMediaType,
-                            (Class<HttpMessageConverter<?>>) messageConverter.getClass(), inputMessage, outputMessage);
-                    if (returnValue != null) {
-                        ((HttpMessageConverter<T>) messageConverter).write(returnValue, selectedMediaType, outputMessage);
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Written [" + returnValue + "] as \"" + selectedMediaType + "\" using [" +
-                                    messageConverter + "]");
-                        }
-                    }
-                    return;
-                }
-            }
-        }
-
-        if (returnValue != null) {
-            throw new HttpMediaTypeNotAcceptableException(this.allSupportedMediaTypes);
-        }
+    @Override
+    public boolean isBindExceptionRequired(WebDataBinder binder, MethodParameter methodParam) {
+        return Validator.super.isBindExceptionRequired(binder, methodParam);
     }
 
+
+    // TODO: 2017/7/22 problem
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        String jsonBy = EnvironmentHolder.getEnvironment().getProperty(JsonBy.WEB_JSONBY);
+        switch (jsonBy) {
+            case "fastJson":
+                globalJsonBy = 0;
+                break;
+            case "gson":
+                globalJsonBy = 1;
+                break;
+            case "jackson":
+                globalJsonBy = 2;
+                break;
+            default:
+                throw new IllegalStateException("no " + jsonBy + " defination");
+        }
+        System.out.println("!!!!!  jsonBy" + "  " + globalJsonBy);
+    }
 }

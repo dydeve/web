@@ -2,6 +2,7 @@ package com.dydeve.web.handler;
 
 import com.dydeve.web.exception.InvalidParamException;
 import com.dydeve.web.handler.annotation.WebObject;
+import com.dydeve.web.validate.Validate;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.core.Conventions;
 import org.springframework.core.MethodParameter;
@@ -33,7 +34,7 @@ import java.util.Map;
  * @see RequestResponseBodyMethodProcessor
  * Created by dy on 2017/7/20.
  */
-public class WebObjectMethodArgumentResolver extends AbstractMethodProcessor implements HandlerMethodArgumentResolver {
+public class WebObjectMethodArgumentResolver implements HandlerMethodArgumentResolver, Validator {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -82,5 +83,7 @@ public class WebObjectMethodArgumentResolver extends AbstractMethodProcessor imp
         return param;
 
     }
+
+
 
 }

@@ -1,5 +1,9 @@
 package com.dydeve.test;
 
+import com.alibaba.fastjson.JSON;
+import com.dydeve.web.handler.annotation.JsonBy;
+import com.dydeve.web.handler.annotation.RequestJson;
+import com.dydeve.web.handler.annotation.ResponseJson;
 import com.dydeve.web.handler.annotation.WebObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -9,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
@@ -19,11 +24,12 @@ import java.util.Map;
  * Created by yuduy on 2017/7/21.
  */
 @Controller
+@JsonBy(JsonBy.GSON)
 public class TestController {
 
     @RequestMapping("/ok")
     @ResponseBody
-    public String ok(@WebObject @Validated A a, BindingResult result) {
+    public String ok(@WebObject @Validated A a, BindingResult result, HttpServletRequest httpServletRequest) {
         if (result.hasErrors()) {
             for (ObjectError error : result.getAllErrors()) {
                 System.out.println(error.getDefaultMessage());
@@ -31,6 +37,18 @@ public class TestController {
         }
         Object b = a;
         return "ok";
+    }
+
+    @RequestMapping("/okk")
+    @ResponseJson
+    public String okk(@RequestJson("d") A a, BindingResult result, HttpServletRequest httpServletRequest) {
+        if (result.hasErrors()) {
+            for (ObjectError error : result.getAllErrors()) {
+                System.out.println(error.getDefaultMessage());
+            }
+        }
+        Object b = a;
+        return "okkk";
     }
 
     public static class A {

@@ -45,6 +45,8 @@ dependencies {
     compile 'com.googlecode.protobuf-java-format:protobuf-java-format:1.2'
     compile group: 'com.google.guava', name: 'guava', version: '22.0'
     compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+    compile group: 'com.alibaba', name: 'fastjson', version: '1.2.35'
+
 
     // optional dependencies below
     compile 'org.apache.tomcat.embed:tomcat-embed-core:8.0.20'

@@ -1,5 +1,7 @@
 package com.dydeve.web.vo;
 
+import org.springframework.http.HttpStatus;
+
 /**
  * common api response
  * Created by dy on 2017/7/19.
@@ -10,6 +12,19 @@ public class ApiResponse {
     private int code;
     private String msg;
     private Object data;
+
+    public static final ApiResponse EMPTY_RESPONSE = success(null);
+
+    public static ApiResponse success(Object data) {
+
+        ApiResponse response = new ApiResponse();
+        response.setSuccess(true);
+        response.setCode(HttpStatus.OK.value());
+        response.setMsg(HttpStatus.OK.getReasonPhrase());
+        response.setData(data);
+
+        return response;
+    }
 
 
     public boolean isSuccess() {

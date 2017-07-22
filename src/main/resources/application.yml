@@ -1,3 +1,6 @@
 server:
   context-path: /web
   port: 8080
+
+web:
+  jsonBy: gson

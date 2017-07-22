@@ -3,12 +3,13 @@ package com.dydeve.web.handler;
 import com.dydeve.web.validate.Validate;
 import org.springframework.core.MethodParameter;
 import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 
 /**
  * Created by dy on 2017/7/22.
  */
-public abstract class AbstractMethodProcessor {
+public interface Validator {
 
     /**
      * Validate the request part if applicable.
@@ -17,9 +18,9 @@ public abstract class AbstractMethodProcessor {
      * @param binder the DataBinder to be used
      * @param methodParam the method parameter
      */
-    protected void validateIfApplicable(WebDataBinder binder, MethodParameter methodParam) {
+    default void validateIfApplicable(WebDataBinder binder, MethodParameter methodParam) {
 
-        Validate validated = methodParam.getParameterAnnotation(Validate.class);
+        Validated validated = methodParam.getParameterAnnotation(Validated.class);
         if (validated != null) {
             Object hints = validated.value();
             Object[] validationHints = (hints instanceof Object[] ? (Object[]) hints : new Object[] {hints});
@@ -35,7 +36,7 @@ public abstract class AbstractMethodProcessor {
      * @return {@code true} if the next method argument is not of type {@link Errors}
      * @since 4.1.5
      */
-    protected boolean isBindExceptionRequired(WebDataBinder binder, MethodParameter methodParam) {
+    default boolean isBindExceptionRequired(WebDataBinder binder, MethodParameter methodParam) {
         int i = methodParam.getParameterIndex();
         Class<?>[] paramTypes = methodParam.getMethod().getParameterTypes();
         boolean hasBindingResult = (paramTypes.length > (i + 1) && Errors.class.isAssignableFrom(paramTypes[i + 1]));
