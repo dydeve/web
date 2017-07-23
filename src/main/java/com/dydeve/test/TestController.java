@@ -10,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -39,16 +40,21 @@ public class TestController {
         return "ok";
     }
 
-    @RequestMapping("/okk")
+    @RequestMapping(value = "/okk", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseJson
-    public String okk(@RequestJson("d") A a, BindingResult result, HttpServletRequest httpServletRequest) {
+    public Object okk(@RequestJson("") A a, BindingResult result, HttpServletRequest httpServletRequest) {
         if (result.hasErrors()) {
             for (ObjectError error : result.getAllErrors()) {
                 System.out.println(error.getDefaultMessage());
             }
         }
         Object b = a;
-        return "okkk";
+        return a;
+    }
+
+    @RequestMapping("/")
+    public String index() {
+        return "redirect:index.html";
     }
 
     public static class A {

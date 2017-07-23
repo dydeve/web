@@ -14,20 +14,32 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.List;
 
 /**
  * Created by dy on 2017/7/22.
  */
 public class JsonHttpMessageConverter extends AbstractHttpMessageConverter<Object>
         implements GenericHttpMessageConverter<Object> {
+
+    public JsonHttpMessageConverter() {
+        super(new MediaType("application", "json", CharsetHolder.UTF_8),
+                new MediaType("application", "*+json", CharsetHolder.UTF_8));
+    }
+
     @Override
     protected boolean supports(Class<?> clazz) {
         return true;
     }
 
     @Override
+    public void setSupportedMediaTypes(List<MediaType> supportedMediaTypes) {
+        super.setSupportedMediaTypes(supportedMediaTypes);
+    }
+
+    @Override
     protected Object readInternal(Class<?> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-        return null;
+        return JSON.parseObject(inputMessage.getBody(), clazz);
     }
 
     @Override
@@ -36,9 +48,7 @@ public class JsonHttpMessageConverter extends AbstractHttpMessageConverter<Objec
         ApiResponse response;
         if (o == null) {
             response = ApiResponse.EMPTY_RESPONSE;
-        }
-
-        if (o instanceof ApiResponse) {
+        } else if (o instanceof ApiResponse) {
             response = (ApiResponse)o;
         } else {
             response = ApiResponse.success(o);
@@ -55,7 +65,7 @@ public class JsonHttpMessageConverter extends AbstractHttpMessageConverter<Objec
 
     @Override
     public boolean canRead(Type type, Class<?> contextClass, MediaType mediaType) {
-        return super.canWrite(contextClass, mediaType);
+        return super.canRead(contextClass, mediaType);
     }
 
     @Override

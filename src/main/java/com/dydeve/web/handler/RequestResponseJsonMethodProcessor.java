@@ -6,20 +6,16 @@ import com.dydeve.web.handler.annotation.RequestJson;
 import com.dydeve.web.handler.annotation.ResponseJson;
 import com.dydeve.web.holder.EnvironmentHolder;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Conventions;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.server.ServletServerHttpRequest;
-import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -28,8 +24,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor;
 import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
@@ -39,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.lang.reflect.Type;
+import java.net.URLDecoder;
 import java.util.*;
 
 /**
@@ -118,13 +113,24 @@ public class RequestResponseJsonMethodProcessor extends AbstractMessageConverter
     <T> Object readFromHttpRequest(NativeWebRequest webRequest, MethodParameter parameter,
                                          Type paramType) throws IOException, HttpMediaTypeNotSupportedException {
         RequestJson json = parameter.getParameterAnnotation(RequestJson.class);
+
+        HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
+
         String requestParam = json.value();
 
-        if (requestParam.length() == 0) {
+        if (requestParam.length() == 0 && "POST".equals(httpServletRequest.getMethod())) {
             return readWithMessageConverters(webRequest, parameter, parameter.getGenericParameterType());
         }
 
-        String jsonString = webRequest.getParameter(requestParam);
+        String jsonString;
+        if (requestParam.length() == 0) {
+            jsonString = httpServletRequest.getQueryString();
+        } else {
+            jsonString = httpServletRequest.getParameter(requestParam);
+        }
+
+        jsonString = URLDecoder.decode(jsonString, "UTF-8");
+
         JsonBy jsonBy = parameter.getMethodAnnotation(JsonBy.class);
         if (jsonBy == null) {
             jsonBy = AnnotationUtils.findAnnotation(parameter.getContainingClass(), JsonBy.class);
@@ -155,7 +161,6 @@ public class RequestResponseJsonMethodProcessor extends AbstractMessageConverter
             inputStream.reset();
         }
         else {
-            // TODO: 2017/7/22 始终不能直接读流  修复
             final PushbackInputStream pushbackInputStream = new PushbackInputStream(inputStream);
             int b = pushbackInputStream.read();
             if (b == -1) {
