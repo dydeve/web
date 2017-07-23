@@ -46,7 +46,7 @@ public class JsonHttpMessageConverter extends AbstractHttpMessageConverter<Objec
     protected void writeInternal(Object o, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
 
         ApiResponse response;
-        if (o == null) {
+        if (o == null) {//todo:实际用不到
             response = ApiResponse.EMPTY_RESPONSE;
         } else if (o instanceof ApiResponse) {
             response = (ApiResponse)o;

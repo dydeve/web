@@ -3,13 +3,16 @@ package com.dydeve.web.config;
 import com.dydeve.web.handler.JsonHttpMessageConverter;
 import com.dydeve.web.handler.RequestResponseJsonMethodProcessor;
 import com.dydeve.web.handler.WebObjectMethodArgumentResolver;
+import com.dydeve.web.holder.CharsetHolder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,7 +45,15 @@ public class WebMvcConfigurerAdapterConfiguration {
 
         @Override
         public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-            converters.add(new JsonHttpMessageConverter());
+            //converters.add(new JsonHttpMessageConverter());
+            for (int i = 0; i < converters.size(); i++) {
+                if (converters.get(i) instanceof StringHttpMessageConverter) {
+                    StringHttpMessageConverter sm = new StringHttpMessageConverter(CharsetHolder.UTF_8);
+                    sm.setWriteAcceptCharset(false);
+                    converters.set(i, sm);
+                    break;
+                }
+            }
         }
     }
 

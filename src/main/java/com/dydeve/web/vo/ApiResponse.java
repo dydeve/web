@@ -1,5 +1,6 @@
 package com.dydeve.web.vo;
 
+import com.dydeve.web.exception.CustomServerException;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -24,6 +25,17 @@ public class ApiResponse {
         response.setData(data);
 
         return response;
+    }
+
+    public static ApiResponse fail(CustomServerException e) {
+
+        ApiResponse response = new ApiResponse();
+        response.setSuccess(false);
+        response.setCode(e.getCode());
+        response.setMsg(e.getMessage());
+
+        return response;
+
     }
 
 

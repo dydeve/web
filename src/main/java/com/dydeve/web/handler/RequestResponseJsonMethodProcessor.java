@@ -227,8 +227,6 @@ public class RequestResponseJsonMethodProcessor extends AbstractMessageConverter
         return null;
     }
 
-    // TODO: 2017/7/22 do nothing 
-    
     @Override
     public void handleReturnValue(Object returnValue, MethodParameter returnType,
                                   ModelAndViewContainer mavContainer, NativeWebRequest webRequest)
