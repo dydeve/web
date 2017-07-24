@@ -1,5 +1,10 @@
 def vJavaLang = '1.8'
 
+def libProjects = [project(':site'),
+                   project(':monitor')]
+
+def javaProjects = libProjects
+
 buildscript {
     ext {
         springBootVersion = '1.2.3.RELEASE'
@@ -8,7 +13,6 @@ buildscript {
     repositories {
         mavenLocal()
         jcenter()
-        //maven { url 'http://nexus.tuniu.org/nexus/content/groups/public/' }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -57,6 +61,58 @@ dependencies {
     testCompile("com.athaydes:spock-reports:1.2.12") {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
+}
+
+configure(javaProjects) {
+    apply plugin: 'java'
+    apply plugin: 'groovy'
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    targetCompatibility = vJavaLang
+    sourceCompatibility = vJavaLang
+
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+
+    dependencies {
+        compile "org.springframework.boot:spring-boot-starter:${springBootVersion}"
+        compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+        compile "org.springframework:spring-web:${springVersion}"
+        compile "org.springframework:spring-webmvc:${springVersion}"
+        compile 'com.google.protobuf:protobuf-java:2.6.1'
+        compile 'com.googlecode.protobuf-java-format:protobuf-java-format:1.2'
+        compile group: 'com.google.guava', name: 'guava', version: '22.0'
+        compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+        compile group: 'com.alibaba', name: 'fastjson', version: '1.2.35'
+
+
+        // optional dependencies below
+        compile 'org.apache.tomcat.embed:tomcat-embed-core:8.0.20'
+
+        testCompile 'org.spockframework:spock-spring:1.0-groovy-2.4'
+        testCompile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+        testCompile "cglib:cglib-nodep:3.1"
+        testCompile("com.athaydes:spock-reports:1.2.12") {
+            transitive = false // this avoids affecting your version of Groovy/Spock
+        }
+    }
+
+    // Ensure that all Gradle-compiled classes are available to Eclipse's
+    // classpath.
+    eclipseClasspath.dependsOn testClasses
+
+    // Skip generation and removal of .settings/org.eclipse.jdt.core.prefs files
+    // during the normal `gradle eclipse` / `gradle cleanEclipse` lifecycle, as
+    // these files have been checked in with formatting settings imported from
+    // style/sagan-format.xml and style/sagan.importorder.
+    // See http://www.gradle.org/docs/current/userguide/eclipse_plugin.html
+    eclipseJdt.onlyIf { false }
+    cleanEclipseJdt.onlyIf { false }
 }
 
 repositories {
