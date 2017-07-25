@@ -12,19 +12,19 @@ public class TraceHolder {
 
     private static final ThreadLocal<Monitor> TRACER = new NamedInheritableThreadLocal<>("TRACER");
 
-    public static Monitor get() {
-        return TRACER.get();
-    }
+    //uuid
+    public static final ThreadLocal<String> TRACE_ID = new ThreadLocal<String>() {
+        @Override
+        protected String initialValue() {
+            throw new NullPointerException("can't get traceId from initialValue");
+        }
+    };
 
-    public static void set(Monitor monitor) {
-        TRACER.set(monitor);
-    }
-
-    /**
-     * important! must remove finally
-     */
-    public static void clear() {
-        TRACER.remove();
-    }
-
+    //request uri
+    public static final ThreadLocal<String> REQUEST_URI = new ThreadLocal<String>() {
+        @Override
+        protected String initialValue() {
+            throw new NullPointerException("can't get traceId from initialValue");
+        }
+    };
 }

@@ -1,6 +1,6 @@
 package dydeve.site.web.exception;
 
-import com.dydeve.web.vo.AbstractResponseStatus;
+import dydeve.site.web.vo.AbstractResponseStatus;
 import org.springframework.http.HttpStatus;
 
 /**

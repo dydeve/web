@@ -1,8 +1,9 @@
 package dydeve.site.web.config;
 
-import com.dydeve.web.exception.CustomServerException;
-import com.dydeve.web.handler.annotation.ResponseJson;
-import com.dydeve.web.vo.ApiResponse;
+import dydeve.monitor.holder.TraceHolder;
+import dydeve.site.web.exception.CustomServerException;
+import dydeve.site.web.handler.annotation.ResponseJson;
+import dydeve.site.web.vo.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -25,10 +26,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler((CustomServerException.class))
     @ResponseJson
-    public ApiResponse CustomServerExceptionHandler(CustomServerException e, HttpServletRequest request) {
+    public ApiResponse CustomServerExceptionHandler(CustomServerException e/*, HttpServletRequest request*/) {
 
         //todo async log and trace  ErrorController
-        log.error("customerServerException happens, request:{}", request.getRequestURI(), e);
+        log.error("customerServerException happens, traceId:{}.", TraceHolder.TRACE_ID.get(), e);
 
         return ApiResponse.fail(e);
     }

@@ -1,6 +1,5 @@
 package dydeve.site.web.handler;
 
-import com.dydeve.web.validate.Validate;
 import org.springframework.core.MethodParameter;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;

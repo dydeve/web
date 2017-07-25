@@ -2,7 +2,6 @@ package dydeve.site.web.holder;
 
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 
 /**
  * spring environment holder

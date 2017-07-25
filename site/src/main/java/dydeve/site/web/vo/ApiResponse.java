@@ -1,6 +1,6 @@
 package dydeve.site.web.vo;
 
-import com.dydeve.web.exception.CustomServerException;
+import dydeve.site.web.exception.CustomServerException;
 import org.springframework.http.HttpStatus;
 
 /**
