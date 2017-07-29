@@ -1,8 +1,6 @@
 package dydeve.monitor.holder;
 
-import dydeve.monitor.util.Monitor;
-import org.springframework.core.NamedInheritableThreadLocal;
-import org.springframework.core.NamedThreadLocal;
+import java.util.UUID;
 
 /**
  * request trace holder consist of thread local
@@ -10,13 +8,13 @@ import org.springframework.core.NamedThreadLocal;
  */
 public class TraceHolder {
 
-    private static final ThreadLocal<Monitor> TRACER = new NamedInheritableThreadLocal<>("TRACER");
+    //private static final ThreadLocal<Monitor> TRACER = new NamedInheritableThreadLocal<>("TRACER");
 
     //uuid
     public static final ThreadLocal<String> TRACE_ID = new ThreadLocal<String>() {
         @Override
         protected String initialValue() {
-            throw new NullPointerException("can't get traceId from initialValue");
+            return UUID.randomUUID().toString();
         }
     };
 
@@ -24,7 +22,7 @@ public class TraceHolder {
     public static final ThreadLocal<String> REQUEST_URI = new ThreadLocal<String>() {
         @Override
         protected String initialValue() {
-            throw new NullPointerException("can't get traceId from initialValue");
+            return null;
         }
     };
 }
