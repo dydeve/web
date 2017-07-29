@@ -13,18 +13,21 @@ public @interface StopWatchHere {
 
     /**
      * when catch exception, throw it
+     *
      * @return
      */
     boolean throwException() default true;
 
     /**
      * description of monitored object
+     *
      * @return
      */
     String description();
 
     /**
      * record params
+     *
      * @return
      */
     boolean recordParams() default false;
@@ -33,6 +36,4 @@ public @interface StopWatchHere {
      * record result
      */
     boolean recordResult() default false;
-
-
 }

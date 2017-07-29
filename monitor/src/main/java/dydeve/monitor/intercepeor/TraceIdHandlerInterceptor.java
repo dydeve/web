@@ -38,6 +38,8 @@ public class TraceIdHandlerInterceptor extends HandlerInterceptorAdapter {
         TraceHolder.REQUEST_URI.remove();
     }
 
+
+    // TODO: 2017/7/28 搞清楚异步情况下  是否可以清理threadlocal 
     @Override
     public void afterConcurrentHandlingStarted(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         throw new UnsupportedOperationException("trace interceptor can't in concurrent mode");
