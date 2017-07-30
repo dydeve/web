@@ -8,10 +8,12 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by yuduy on 2017/7/29.
  */
+@Component
 @Aspect
 public class StopWatcher {
 

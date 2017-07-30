@@ -15,7 +15,6 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath ("com.tuniu.nl.eveoh:gradle-aspectj:1.5")
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
     }
 }
