@@ -1,0 +1,6 @@
+dependencies {
+    compile "org.apache.kafka:kafka-clients:0.11.0.0"//produce consume
+    compile "org.apache.kafka:kafka-streams:0.11.0.0"//stream
+    compile "org.apache.kafka:kafka-clients:0.11.0.0"
+    compile "org.apache.kafka:kafka-clients:0.11.0.0"
+}
