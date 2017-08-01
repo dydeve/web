@@ -1,11 +1,7 @@
 package dydeve.site.web.config;
 
-import com.dydeve.web.handler.JsonHttpMessageConverter;
-import com.dydeve.web.handler.RequestResponseJsonMethodProcessor;
-import com.dydeve.web.holder.EnvironmentHolder;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;

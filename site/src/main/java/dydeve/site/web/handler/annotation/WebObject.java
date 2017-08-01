@@ -1,8 +1,5 @@
 package dydeve.site.web.handler.annotation;
 
-import com.dydeve.util.callback.Callback;
-import com.dydeve.util.callback.FailureCallback;
-
 import java.lang.annotation.*;
 
 /**

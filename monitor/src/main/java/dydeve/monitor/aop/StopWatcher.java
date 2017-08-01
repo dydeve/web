@@ -1,6 +1,7 @@
 package dydeve.monitor.aop;
 
 import dydeve.monitor.aop.annotation.StopWatchHere;
+import dydeve.monitor.log.KafkaSender;
 import dydeve.monitor.util.StopWatchMonitor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -8,6 +9,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,8 +19,8 @@ import org.springframework.stereotype.Component;
 @Aspect
 public class StopWatcher {
 
-    //todo custom async log
-    private static final Logger log = LoggerFactory.getLogger(StopWatcher.class);
+    @Autowired
+    private KafkaSender sender;
 
     @Pointcut(value = "@annotation(stopWatchHere)")//dydeve.monitor.aop.annotation.StopWatchHere
     public void stop(StopWatchHere stopWatchHere) {
@@ -58,7 +60,7 @@ public class StopWatcher {
             }
             return null;
         } finally {
-            //todo log.async(monitor);
+            sender.send(monitor);
         }
     }
 

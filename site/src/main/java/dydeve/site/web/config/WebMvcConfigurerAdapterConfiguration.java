@@ -1,9 +1,9 @@
 package dydeve.site.web.config;
 
-import com.dydeve.web.handler.JsonHttpMessageConverter;
-import com.dydeve.web.handler.RequestResponseJsonMethodProcessor;
-import com.dydeve.web.handler.WebObjectMethodArgumentResolver;
-import com.dydeve.web.holder.CharsetHolder;
+import dydeve.site.web.handler.JsonHttpMessageConverter;
+import dydeve.site.web.handler.RequestResponseJsonMethodProcessor;
+import dydeve.site.web.handler.WebObjectMethodArgumentResolver;
+import dydeve.site.web.holder.CharsetHolder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -12,7 +12,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 

@@ -131,5 +131,6 @@ configure(javaProjects) {
 
 repositories {
     mavenLocal()
+    maven {url 'http://bug01:8082/nexus/content/groups/public'}
     jcenter()
 }
