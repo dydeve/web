@@ -2,13 +2,11 @@ package dydeve.monitor.aop;
 
 import dydeve.monitor.aop.annotation.StopWatchHere;
 import dydeve.monitor.log.KafkaSender;
-import dydeve.monitor.util.StopWatchMonitor;
+import dydeve.monitor.stat.StopWatch;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +35,7 @@ public class StopWatcher {
         }*/
 
         Object result;
-        StopWatchMonitor monitor = StopWatchMonitor
+        StopWatch monitor = StopWatch
                 .createUnstarted()
                 .setDescription(stopWatchHere.description());
 

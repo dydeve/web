@@ -1,4 +1,4 @@
-package dydeve.monitor.util;
+package dydeve.monitor.stat;
 
 import com.google.common.base.Preconditions;
 
@@ -6,7 +6,8 @@ import com.google.common.base.Preconditions;
  * @see com.google.common.base.Stopwatch
  * Created by yuduy on 2017/7/29.
  */
-public class StopWatchMonitor {
+@Deprecated
+public class StopWatch {
 
     private static final Boolean SUCCESS = Boolean.TRUE;
     private static final Boolean FAIL = Boolean.FALSE;
@@ -24,12 +25,12 @@ public class StopWatchMonitor {
     private long elapsedNanos;
 
 
-    public static StopWatchMonitor createUnstarted() {
-        return new StopWatchMonitor();
+    public static StopWatch createUnstarted() {
+        return new StopWatch();
     }
 
-    public static StopWatchMonitor createStarted() {
-        return new StopWatchMonitor().start();
+    public static StopWatch createStarted() {
+        return new StopWatch().start();
     }
 
     /**
@@ -37,7 +38,7 @@ public class StopWatchMonitor {
      * @param params
      * @return
      */
-    public static StopWatchMonitor createStartedWithParams(Object ... params) {
+    public static StopWatch createStartedWithParams(Object ... params) {
         return createStarted().setParams(params);
     }
 
@@ -45,7 +46,7 @@ public class StopWatchMonitor {
         return state == RUNNING;
     }
 
-    public StopWatchMonitor start() {
+    public StopWatch start() {
         Preconditions.checkState(state == INIT, "this stop watch is already running");
         state = RUNNING;
         startTime = System.nanoTime();
@@ -56,26 +57,26 @@ public class StopWatchMonitor {
      * stop with a given state
      * @return
      */
-    public StopWatchMonitor stop(Boolean s) {
+    public StopWatch stop(Boolean s) {
         elapsedNanos = System.nanoTime() - startTime;
         Preconditions.checkState(state = RUNNING, "This stopwatch is already stopped.");
         this.state = s;
         return this;
     }
 
-    public StopWatchMonitor stop() {
+    public StopWatch stop() {
         return stop(SUCCESS);
     }
 
-    public StopWatchMonitor stopInnormally() {
+    public StopWatch stopInnormally() {
         return stop(FAIL);
     }
 
-    public StopWatchMonitor stopWithException(Exception e) {
+    public StopWatch stopWithException(Exception e) {
         return stop(FAIL).setE(e);
     }
 
-    public StopWatchMonitor stopWithResult(Object result) {
+    public StopWatch stopWithResult(Object result) {
         return stop(SUCCESS).setResult(result);
     }
 
@@ -83,7 +84,7 @@ public class StopWatchMonitor {
         return description;
     }
 
-    public StopWatchMonitor setDescription(String description) {
+    public StopWatch setDescription(String description) {
         this.description = description;
         return this;
     }
@@ -92,7 +93,7 @@ public class StopWatchMonitor {
         return e;
     }
 
-    public StopWatchMonitor setE(Exception e) {
+    public StopWatch setE(Exception e) {
         this.e = e;
         return this;
     }
@@ -101,7 +102,7 @@ public class StopWatchMonitor {
         return params;
     }
 
-    public StopWatchMonitor setParams(Object[] params) {
+    public StopWatch setParams(Object[] params) {
         this.params = params;
         return this;
     }
@@ -110,7 +111,7 @@ public class StopWatchMonitor {
         return result;
     }
 
-    public StopWatchMonitor setResult(Object result) {
+    public StopWatch setResult(Object result) {
         this.result = result;
         return this;
     }
