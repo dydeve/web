@@ -1,14 +1,12 @@
 package dydeve.site.web.config;
 
-import dydeve.monitor.holder.TraceHolder;
+import dydeve.monitor.holder.ThreadLocalHolder;
 import dydeve.site.web.exception.CustomServerException;
 import dydeve.site.web.handler.annotation.ResponseJson;
 import dydeve.site.web.vo.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * {@code ControllerAdvice} is typically used to define {@link ExceptionHandler @ExceptionHandler},
@@ -29,7 +27,7 @@ public class GlobalExceptionHandler {
     public ApiResponse CustomServerExceptionHandler(CustomServerException e/*, HttpServletRequest request*/) {
 
         //todo async log and trace  ErrorController
-        log.error("customerServerException happens, traceId:{}.", TraceHolder.TRACE_ID.get(), e);
+        log.error("customerServerException happens, traceId:{}.", ThreadLocalHolder.TRACE_ID.get(), e);
 
         return ApiResponse.fail(e);
     }

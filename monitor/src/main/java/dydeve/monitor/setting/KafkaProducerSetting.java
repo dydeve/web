@@ -3,7 +3,7 @@ package dydeve.monitor.setting;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
 /**
- * Created by yuduy on 2017/8/1.
+ * Created by dy on 2017/8/1.
  */
 public class KafkaProducerSetting {
 

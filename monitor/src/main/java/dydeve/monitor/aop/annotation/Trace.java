@@ -3,24 +3,15 @@ package dydeve.monitor.aop.annotation;
 import java.lang.annotation.*;
 
 /**
- * Created by dy on 2017/7/29.
+ * Created by yuduy on 2017/8/2.
  */
-@Deprecated
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface StopWatchHere {
-
-
-    /**
-     * when catch exception, throw it
-     *
-     * @return
-     */
-    boolean throwException() default true;
+public @interface Trace {
 
     /**
-     * description of monitored object
+     * description of traced method
      *
      * @return
      */
@@ -37,4 +28,7 @@ public @interface StopWatchHere {
      * record result
      */
     boolean recordResult() default false;
+
+
+
 }

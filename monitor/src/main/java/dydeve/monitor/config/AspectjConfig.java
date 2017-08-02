@@ -4,9 +4,9 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by yuduy on 2017/7/29.
+ * Created by dy on 2017/7/29.
  */
-@Component
+//@Component
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 public class AspectjConfig {
 }

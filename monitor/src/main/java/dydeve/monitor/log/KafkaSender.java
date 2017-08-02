@@ -15,8 +15,9 @@ import javax.annotation.PostConstruct;
 import java.util.concurrent.*;
 
 /**
- * Created by yuduy on 2017/8/1.
+ * Created by dy on 2017/8/1.
  */
+//todo modify here
 @Component
 public class KafkaSender {
 

@@ -11,8 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by yuduy on 2017/7/29.
+ * Created by dy on 2017/7/29.
  */
+@Deprecated
 @Component
 @Aspect
 public class StopWatcher {
