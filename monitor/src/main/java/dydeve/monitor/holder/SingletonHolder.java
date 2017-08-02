@@ -4,7 +4,7 @@ import dydeve.monitor.stat.MapStatFactory;
 
 /**
  * singleton by inner class
- * Created by yuduy on 2017/8/2.
+ * Created by dy on 2017/8/2.
  */
 public class SingletonHolder {
 

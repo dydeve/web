@@ -2,7 +2,7 @@ package dydeve.monitor.stat;
 
 /**
  * simplify {@link com.google.common.base.Stopwatch}
- * Created by yuduy on 2017/8/2.
+ * Created by dy on 2017/8/2.
  */
 public class StopWatchTimerWatch implements TimerWatch {
 

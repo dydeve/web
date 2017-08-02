@@ -6,13 +6,7 @@ package dydeve.monitor.util;
 public abstract class SynchronizedSequential<T> implements Sequential<T> {
 
     @Override
-    public synchronized T getAndNext() {
+    public synchronized Sequencer<T> sequencer() {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public synchronized T nextAndGet() {
-        throw new UnsupportedOperationException();
-    }
-
 }

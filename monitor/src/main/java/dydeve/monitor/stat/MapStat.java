@@ -18,6 +18,10 @@ public class MapStat implements IStat<Map.Entry<String, Object>, String> {
         }
     };
 
+    /**
+     * no defensive copy
+     * @return
+     */
     @Override
     public SnapShot<String, Object, Map.Entry<String, Object>, String> snapShot() {
         return snapShot;

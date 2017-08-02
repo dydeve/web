@@ -1,6 +1,5 @@
 package dydeve.monitor.aop;
 
-import com.google.common.base.Stopwatch;
 import dydeve.monitor.aop.annotation.Trace;
 import dydeve.monitor.holder.SingletonHolder;
 import dydeve.monitor.holder.ThreadLocalHolder;
@@ -21,7 +20,7 @@ import java.util.Map;
 
 /**
  * {@code RequestMapping} and {@code Trace}
- * Created by yuduy on 2017/8/2.
+ * Created by dy on 2017/8/2.
  */
 @Component
 @Aspect
@@ -70,16 +69,23 @@ public class RequestMappingTracerAop {
         try {
             watch.start();
             result = pjp.proceed();
+            watch.stop();
+
+            stat.setAttribute(IStat.level, "info");
             if (trace.recordResult()) {
                 //todo test null and void
                 stat.setAttribute(IStat.result, result);
             }
             return result;
         } catch (Exception e) {
+            watch.stop();
+            stat.setAttribute(IStat.level, "error");
+
+            e.printStackTrace();
 
             throw e;
         } finally {
-            watch.stop();
+
             stat.setAttribute(IStat.startTime, watch.startTime());
             stat.setAttribute(IStat.elapsedTime, watch.elapsedTime());
 

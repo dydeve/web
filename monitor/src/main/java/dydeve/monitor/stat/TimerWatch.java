@@ -2,7 +2,7 @@ package dydeve.monitor.stat;
 
 /**
  * 计时器
- * Created by yuduy on 2017/8/2.
+ * Created by dy on 2017/8/2.
  */
 public interface TimerWatch {
 
