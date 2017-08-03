@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * Created by dy on 2017/8/1.
  */
-//@Configuration
+@Configuration
 public class KafkaConfig {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaConfig.class);

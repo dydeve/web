@@ -19,6 +19,8 @@ buildscript {
     }
 }
 
+
+
 configure(allprojects) {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
@@ -37,6 +39,7 @@ configure(allprojects) {
 }
 
 apply plugin: 'java'
+
 
 project.ext {
     aspectjVersion = '1.8.5'

@@ -7,9 +7,13 @@ import org.springframework.context.annotation.ComponentScan;
 /**
  * Created by dy on 2017/7/21.
  */
-@ComponentScan("com.dydeve.*")
+@ComponentScan("dydeve.*")
 @SpringBootApplication
 public class Application {
+
+    /*public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }*/
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

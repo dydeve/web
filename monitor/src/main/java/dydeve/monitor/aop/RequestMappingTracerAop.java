@@ -5,10 +5,13 @@ import dydeve.monitor.holder.SingletonHolder;
 import dydeve.monitor.holder.ThreadLocalHolder;
 import dydeve.monitor.log.KafkaSender;
 import dydeve.monitor.stat.*;
+import dydeve.monitor.util.IPUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +28,8 @@ import java.util.Map;
 @Component
 @Aspect
 public class RequestMappingTracerAop {
+
+    private static final Logger log = LoggerFactory.getLogger(RequestMappingTracerAop.class);
 
     @Autowired
     private KafkaSender sender;
@@ -45,6 +50,7 @@ public class RequestMappingTracerAop {
             tracer = new Tracer<>(
                     Tracer.Group.SITE,
                     ThreadLocalHolder.TRACE_ID.get(),
+                    IPUtils.LOCAL_IP,
                     SingletonHolder.getMapStatFactory());
 
             ThreadLocalHolder.TRACER.set(tracer);
@@ -81,6 +87,9 @@ public class RequestMappingTracerAop {
             watch.stop();
             stat.setAttribute(IStat.level, "error");
 
+            //todo exception resolve
+
+            log.error("", e);
             e.printStackTrace();
 
             throw e;

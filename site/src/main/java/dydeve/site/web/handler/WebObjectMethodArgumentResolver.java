@@ -5,6 +5,7 @@ import dydeve.site.web.handler.annotation.WebObject;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.core.Conventions;
 import org.springframework.core.MethodParameter;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
@@ -18,6 +19,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodArgumentResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.Map;
 
 /**
@@ -40,28 +43,42 @@ public class WebObjectMethodArgumentResolver implements HandlerMethodArgumentRes
 
         Map<String, String[]> parameterMap = webRequest.getParameterMap();
         if (parameterMap == null || parameterMap.isEmpty()) {
-            if (parameter.getMethodAnnotation(WebObject.class).required()) {
+            if (parameter.getParameterAnnotation(WebObject.class).required()) {
                 throw new InvalidParamException("request param can't be null", -1);
             }
             return null;
         }
+//todo 多余
+        Class<?> clazz = parameter.getParameterType();
+        if (Map.class.isAssignableFrom(clazz)) {
+            ParameterizedType mapGenericType = (ParameterizedType) parameter.getGenericParameterType();
+            if (String.class.equals(mapGenericType.getActualTypeArguments()[0])
+                    && String[].class.equals(mapGenericType.getActualTypeArguments()[1])) {
+                return parameterMap;
+            } else {
+                throw new UnsupportedOperationException("just support map in form of map<String, String[]>");
+            }
+        }
 
         //convert to map
-        MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>(parameterMap.size());
+        /*MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>(parameterMap.size());
         for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
             for (String value : entry.getValue()) {
                 multiValueMap.add(entry.getKey(), value);
             }
-        }
+        }*/
 
-        Class<?> paramType = parameter.getParameterType();
-        if (MultiValueMap.class.isAssignableFrom(paramType)) {
+
+        /*if (MultiValueMap.class.isAssignableFrom(paramType)) {
             return multiValueMap;
-        }
+        }*/
 
         //convert to object
-        Object param = paramType.newInstance();
-        BeanUtils.populate(param, multiValueMap);
+        Object param = clazz.newInstance();//必须有无参构造函数
+        /*for (Field field : clazz.getDeclaredFields()) {array list collection map
+            String[] values = parameterMap.get(field.getName());
+        }*/
+        BeanUtils.populate(param, parameterMap);
 
         //validate if applicable
         String name = Conventions.getVariableNameForParameter(parameter);

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 /**
  * Created by dy on 2017/7/29.
  */
-//@Component
+@Component
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 public class AspectjConfig {
 }

@@ -21,7 +21,7 @@ public class IPUtils {
         throw new UnsupportedOperationException();
     }
 
-    private static final String LOCAL_IP = initLocalIpAddress();
+    public static final String LOCAL_IP = initLocalIpAddress();
 
     private static final String XFF = "X-Forwarded-For";
 
@@ -39,30 +39,62 @@ public class IPUtils {
         return ip == null || ip.length() == 0 || "unknown".equals(ip);
     }
 
-    public static String getRemoteIp(HttpServletRequest httpRequest) {
-        String ip = null;
+    public static String getIpAddress(HttpServletRequest httpRequest) {
+        String ip;
         for (String headName : LOOP_HEAD_NAMES) {
             ip = httpRequest.getHeader(headName);
             if (!isIpInvalid(ip)) {
-                break;
+                ip = getFirstValidIp(ip);
+                if (ip != null) {
+                    return ip;
+                }
             }
-            ip = null;
         }
 
-        if (ip != null) {
-return null;
+        ip = httpRequest.getRemoteAddr();
+
+        if (log.isDebugEnabled()) {
+            //can't get ip from head, show all headers
+            log.debug("remote upstream ip is : {}, headers are : {}", ip, getHeaders(httpRequest));
         }
-        return null;
+
+
+        return ip;
 
     }
 
-    /*public static boolean isLocalIp(String ip) {
-        try {
-            InetAddress.getByName(ip);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+    public static String getHeaders(HttpServletRequest httpRequest) {
+        Enumeration<String> headerNaames = httpRequest.getHeaderNames();
+        String currentHeaderName;
+        StringBuilder buf = new StringBuilder();
+        while (headerNaames.hasMoreElements()) {
+            currentHeaderName = headerNaames.nextElement();
+            buf.append(currentHeaderName).append(":");
+            buf.append(httpRequest.getHeader(currentHeaderName)).append(",").append("\n");
         }
-    }*/
+        buf.delete(buf.length() - 2, buf.length());
+        return buf.toString();
+    }
+
+    public static String getFirstValidIp(String ipString) {
+        String[] ips = ipString.split(",");
+        for (String ip : ips) {
+            if (!isIpInvalid(ip)) {
+                return ip;
+            }
+        }
+        return null;
+    }
+
+    public static boolean isLocalIp(String ip) {
+        try {
+            InetAddress inetAddress = InetAddress.getByName(ip);
+            return inetAddress.isSiteLocalAddress() || inetAddress.isLoopbackAddress();
+        } catch (UnknownHostException e) {
+            log.error("parse ip {} fail. e.message {}",  ip, e.getMessage());
+            return false;
+        }
+    }
 
     //From HBase Addressing.Java getIpAddress
     private static InetAddress getLocalInetAddress() throws SocketException {

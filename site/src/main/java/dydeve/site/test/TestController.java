@@ -1,5 +1,6 @@
 package dydeve.site.test;
 
+import dydeve.monitor.util.IPUtils;
 import dydeve.site.web.handler.annotation.JsonBy;
 import dydeve.site.web.handler.annotation.RequestJson;
 import dydeve.site.web.handler.annotation.ResponseJson;
@@ -12,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -21,19 +24,22 @@ import java.util.List;
  * Created by dy on 2017/7/21.
  */
 @Controller
-@JsonBy(JsonBy.GSON)
+//@JsonBy(JsonBy.GSON)
 public class TestController {
 
     @RequestMapping("/ok")
     @ResponseBody
-    public String ok(@WebObject @Validated A a, BindingResult result, HttpServletRequest httpServletRequest) {
-        if (result.hasErrors()) {
+    public Object ok(@WebObject(required = false) @Validated A a, BindingResult result, HttpServletRequest httpServletRequest) {
+        /*if (result.hasErrors()) {
             for (ObjectError error : result.getAllErrors()) {
                 System.out.println(error.getDefaultMessage());
             }
-        }
+        }*/
+
+        System.out.println(IPUtils.getHeaders(httpServletRequest));
+
         Object b = a;
-        return "ok";
+        return b;
     }
 
     @RequestMapping(value = "/okk", method = {RequestMethod.GET, RequestMethod.POST})
@@ -53,6 +59,7 @@ public class TestController {
         return "redirect:index.html";
     }
 
+    @Nullable
     public static class A {
 
         @Min(value = 1, message = "a can't < 1")

@@ -19,15 +19,18 @@ public class Tracer<E, T, S extends IStat<E, T>> implements Sequential<Integer>{
 
     private String traceId;
 
+    private String host;
+
     private IStatFactory<E, T, S> statFactory;
 
     private LinkedList<S> stats;
 
     private Sequencer<Integer> counter;
 
-    public Tracer(Group group, String traceId, IStatFactory<E, T, S> statFactory) {
+    public Tracer(Group group, String traceId, String host, IStatFactory<E, T, S> statFactory) {
         this.group = group;
         this.traceId = traceId;
+        this.host = host;
         this.statFactory = statFactory;
         this.stats = new LinkedList<>();
         this.counter = IntegerSequencer.newInstance();

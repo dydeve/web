@@ -16,13 +16,14 @@ import org.springframework.web.bind.annotation.*;
  * <a href="http://www.cnblogs.com/xinzhao/p/4902295.html"></a>
  * Created by dy on 2017/7/23.
  */
+//todo no effect
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
 
     Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler((CustomServerException.class))
+    @ExceptionHandler(CustomServerException.class)
     @ResponseJson
     public ApiResponse CustomServerExceptionHandler(CustomServerException e/*, HttpServletRequest request*/) {
 
