@@ -19,6 +19,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by dy on 2017/7/21.
@@ -29,7 +30,7 @@ public class TestController {
 
     @RequestMapping("/ok")
     @ResponseBody
-    public Object ok(@WebObject(required = false) @Validated A a, BindingResult result, HttpServletRequest httpServletRequest) {
+    public Object ok(@WebObject(required = false) /*@Validated*/ A/*Map<String, String[]>*/ a, /*BindingResult result,*/ HttpServletRequest httpServletRequest) {
         /*if (result.hasErrors()) {
             for (ObjectError error : result.getAllErrors()) {
                 System.out.println(error.getDefaultMessage());
@@ -38,8 +39,7 @@ public class TestController {
 
         System.out.println(IPUtils.getHeaders(httpServletRequest));
 
-        Object b = a;
-        return b;
+        return a;
     }
 
     @RequestMapping(value = "/okk", method = {RequestMethod.GET, RequestMethod.POST})
@@ -68,8 +68,8 @@ public class TestController {
 
         @Size(min = 2, max = 2, message = "size must be 2")
         private String c;
-        private List<Integer> d;//d=[]
-        private List<Integer> e;//e=..&e=..
+        private /*List<*/Integer[]/*>*/ d;//d=[]
+        private /*List<*/Integer[]/*>*/ e;//e=..&e=..
 
         public int getA() {
             return a;
@@ -96,19 +96,19 @@ public class TestController {
             this.c = c;
         }
 
-        public List<Integer> getD() {
+        public Integer[] getD() {
             return d;
         }
 
-        public void setD(List<Integer> d) {
+        public void setD(Integer[] d) {
             this.d = d;
         }
 
-        public List<Integer> getE() {
+        public Integer[] getE() {
             return e;
         }
 
-        public void setE(List<Integer> e) {
+        public void setE(Integer[] e) {
             this.e = e;
         }
     }

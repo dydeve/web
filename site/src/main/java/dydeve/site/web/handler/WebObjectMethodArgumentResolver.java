@@ -48,8 +48,8 @@ public class WebObjectMethodArgumentResolver implements HandlerMethodArgumentRes
             }
             return null;
         }
-//todo 多余
-        Class<?> clazz = parameter.getParameterType();
+        //todo 不支持map做想象中的入参 或者把convert放前面
+        /*Class<?> clazz = parameter.getParameterType();
         if (Map.class.isAssignableFrom(clazz)) {
             ParameterizedType mapGenericType = (ParameterizedType) parameter.getGenericParameterType();
             if (String.class.equals(mapGenericType.getActualTypeArguments()[0])
@@ -58,15 +58,15 @@ public class WebObjectMethodArgumentResolver implements HandlerMethodArgumentRes
             } else {
                 throw new UnsupportedOperationException("just support map in form of map<String, String[]>");
             }
-        }
+        }*/
 
         //convert to map
-        /*MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>(parameterMap.size());
+        MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>(parameterMap.size());
         for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
             for (String value : entry.getValue()) {
                 multiValueMap.add(entry.getKey(), value);
             }
-        }*/
+        }
 
 
         /*if (MultiValueMap.class.isAssignableFrom(paramType)) {
@@ -74,11 +74,11 @@ public class WebObjectMethodArgumentResolver implements HandlerMethodArgumentRes
         }*/
 
         //convert to object
-        Object param = clazz.newInstance();//必须有无参构造函数
+        Object param = parameter.getParameterType().newInstance();//必须有无参构造函数
         /*for (Field field : clazz.getDeclaredFields()) {array list collection map
             String[] values = parameterMap.get(field.getName());
         }*/
-        BeanUtils.populate(param, parameterMap);
+        BeanUtils.populate(param, multiValueMap);
 
         //validate if applicable
         String name = Conventions.getVariableNameForParameter(parameter);
