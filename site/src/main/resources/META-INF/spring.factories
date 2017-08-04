@@ -1,3 +1,4 @@
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-dydeve.site.web.config.WebMvcConfigurerAdapterConfiguration
+dydeve.site.web.config.WebMvcConfigurerAdapterConfiguration,\
+dydeve.site.web.config.GlobalErrorConfiguration

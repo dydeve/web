@@ -1,6 +1,8 @@
 package dydeve.site.test;
 
+import com.alibaba.fastjson.TypeReference;
 import dydeve.monitor.util.IPUtils;
+import dydeve.site.web.exception.CustomServerException;
 import dydeve.site.web.handler.annotation.JsonBy;
 import dydeve.site.web.handler.annotation.RequestJson;
 import dydeve.site.web.handler.annotation.ResponseJson;
@@ -18,6 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -30,12 +35,20 @@ public class TestController {
 
     @RequestMapping("/ok")
     @ResponseBody
-    public Object ok(@WebObject(required = false) /*@Validated*/ A/*Map<String, String[]>*/ a, /*BindingResult result,*/ HttpServletRequest httpServletRequest) {
+    public Object ok(@WebObject(required = false) /*@Validated*/ A/*Map<String, String[]>*/ a, /*BindingResult result,*/ HttpServletRequest httpServletRequest) throws CustomServerException {
         /*if (result.hasErrors()) {
             for (ObjectError error : result.getAllErrors()) {
                 System.out.println(error.getDefaultMessage());
             }
         }*/
+
+        if (true) {
+            if (a.a == 1) {
+                throw new CustomServerException("", 1);
+            } else {
+                throw new RuntimeException("asdf");
+            }
+        }
 
         System.out.println(IPUtils.getHeaders(httpServletRequest));
 
@@ -44,7 +57,8 @@ public class TestController {
 
     @RequestMapping(value = "/okk", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseJson
-    public Object okk(@RequestJson("") A a, BindingResult result, HttpServletRequest httpServletRequest) {
+    public Object okk(@RequestJson("") A a, BindingResult result, HttpServletRequest httpServletRequest) throws CustomServerException {
+
         if (result.hasErrors()) {
             for (ObjectError error : result.getAllErrors()) {
                 System.out.println(error.getDefaultMessage());
@@ -115,5 +129,48 @@ public class TestController {
 
     public static class B extends A {}
 
+    public static void main(String[] args) {
+        Map<String, List<String>> map1;
+        Map<String, Collection<String>> map2;
+
+        TestController c = new TestController();
+
+        c.a(new TypeReference<Map<String, String[]>>() {}, Map.class);
+        c.a(new TypeReference<Map<String, Collection>>() {}, Map.class);
+        c.a(new TypeReference<Map>() {}, Map.class);
+
+    }
+
+
+    public <T> void t(T obj, Class<T> clazz) {
+
+
+
+        new TypeReference<T>(){};
+    }
+
+    public <T> void  a(TypeReference<T> object, Class<? super T> clazz) {
+        Type type = object.getType();
+        Class<?> z = type.getClass();
+        /*Class<?> x = (Class<?>)type;*/
+        if (Map.class.isAssignableFrom(clazz)) {
+            if (type instanceof ParameterizedType) {//in case of map without generic
+                ParameterizedType mapGenericType = (ParameterizedType) type;
+
+                Type a = mapGenericType.getActualTypeArguments()[0];
+                Type b = mapGenericType.getActualTypeArguments()[1];
+
+                if (String.class.equals(mapGenericType.getActualTypeArguments()[0])
+                        && String[].class.equals(mapGenericType.getActualTypeArguments()[1])) {
+                    return;
+                } else {
+                    //throw new UnsupportedOperationException("just support map in form of map<String, String[]>");
+                }
+            }
+
+        } else {
+            Class<?> a = (Class<?>)type;
+        }
+    }
 
 }
