@@ -34,7 +34,7 @@ import java.util.Map;
 public class TestController {
 
     @RequestMapping("/ok")
-    @ResponseBody
+    @ResponseJson
     public Object ok(@WebObject(required = false) /*@Validated*/ A/*Map<String, String[]>*/ a, /*BindingResult result,*/ HttpServletRequest httpServletRequest) throws CustomServerException {
         /*if (result.hasErrors()) {
             for (ObjectError error : result.getAllErrors()) {

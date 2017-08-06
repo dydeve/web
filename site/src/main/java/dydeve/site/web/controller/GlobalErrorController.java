@@ -1,5 +1,6 @@
 package dydeve.site.web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.boot.autoconfigure.web.ErrorController;
@@ -27,7 +28,7 @@ import java.util.Map;
  *
  * Created by yuduy on 2017/8/4.
  */
-//@Controller
+@Controller
 public class GlobalErrorController implements ErrorController {
 
     @Value("${error.path:/error}")
@@ -35,6 +36,7 @@ public class GlobalErrorController implements ErrorController {
 
     private final ErrorAttributes errorAttributes;
 
+    @Autowired
     public GlobalErrorController(ErrorAttributes errorAttributes) {
         Assert.notNull(errorAttributes, "ErrorAttributes must not be null");
         this.errorAttributes = errorAttributes;

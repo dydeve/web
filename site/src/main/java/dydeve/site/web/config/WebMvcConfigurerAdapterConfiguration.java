@@ -10,8 +10,14 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,6 +28,9 @@ import java.util.List;
 public class WebMvcConfigurerAdapterConfiguration {
 
     @Configuration
+    /**
+     * 使用了 @EnableWebMvc 注解后 WebMvcAutoConfiguration 提供的默认配置会失效，必须提供全部配置。
+     */
     @ConditionalOnWebApplication
     protected static class MvcConfiguration extends WebMvcConfigurerAdapter {
 
@@ -54,6 +63,25 @@ public class WebMvcConfigurerAdapterConfiguration {
                 }
             }
         }
+
+        @Override
+        public void addResourceHandlers(ResourceHandlerRegistry registry) {
+            registry.addResourceHandler("/static/**")
+                    .addResourceLocations("classpath:/static/")
+                    .resourceChain(false);
+        }
+
+        /*@Override
+        public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
+
+            exceptionResolvers.add(new HandlerExceptionResolver() {
+                @Override
+                public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+                    return null;
+                }
+            });
+            super.configureHandlerExceptionResolvers(exceptionResolvers);
+        }*/
     }
 
 }

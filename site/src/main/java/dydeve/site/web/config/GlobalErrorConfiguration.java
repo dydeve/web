@@ -7,14 +7,15 @@ import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.web.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 
 /**
  * @see ErrorMvcAutoConfiguration
  * Created by yuduy on 2017/8/4.
  */
-@AutoConfigureBefore(ErrorMvcAutoConfiguration.class)
 @Configuration
-public class GlobalErrorConfiguration {
+@AutoConfigureBefore(ErrorMvcAutoConfiguration.class)
+public class GlobalErrorConfiguration /*implements Ordered*/ {
 
 
     @Bean
@@ -29,4 +30,8 @@ public class GlobalErrorConfiguration {
         return new GlobalErrorController(errorAttributes);
     }
 
+    /*@Override
+    public int getOrder() {
+        return -1;
+    }*/
 }
