@@ -59,7 +59,7 @@ public class StopWatcher {
             }
             return null;
         } finally {
-            sender.send(monitor);
+            //sender.send(monitor);
         }
     }
 

@@ -1,5 +1,4 @@
-dependencies {
-    compile project(':monitor')
+dependencies{
     compile project(':common')
     compile group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: '4.1.3'
 

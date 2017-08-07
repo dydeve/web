@@ -2,3 +2,5 @@ rootProject.name = 'web'
 
 include 'site'
 include 'monitor'
+include 'common'
+include 'rest'

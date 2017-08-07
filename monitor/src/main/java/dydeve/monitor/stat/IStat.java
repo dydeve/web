@@ -15,9 +15,12 @@ public interface IStat<E, T> extends SnapShoter<String, Object, E, T> {
     String status = "status";
     String level = "level";
 
+    String traceId = "traceId";
+
     String host = "host";
     String client = "client";
-    String url = "url";
+    String queryString = "queryString";
+    String route = "route";
     String refer = "refer";
 
     String error = "error";

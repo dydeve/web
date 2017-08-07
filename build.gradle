@@ -1,7 +1,9 @@
 def vJavaLang = '1.8'
 
 def libProjects = [project(':site'),
-                   project(':monitor')]
+                   project(':monitor'),
+                   project(':common'),
+                   project(':rest')]
 
 def javaProjects = libProjects
 

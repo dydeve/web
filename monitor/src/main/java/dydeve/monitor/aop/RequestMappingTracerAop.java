@@ -1,5 +1,6 @@
 package dydeve.monitor.aop;
 
+import dydeve.common.ThrowableUtils;
 import dydeve.monitor.aop.annotation.Trace;
 import dydeve.monitor.holder.SingletonHolder;
 import dydeve.monitor.holder.ThreadLocalHolder;
@@ -19,6 +20,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Map;
 
 /**
@@ -63,8 +67,9 @@ public class RequestMappingTracerAop {
         stat.setAttribute(IStat.name, trace.description());
 
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest httpServletRequest = servletRequestAttributes.getRequest();
-        stat.setAttribute(IStat.url, httpServletRequest.getRequestURI());
+        //stat.setAttribute(IStat.url, servletRequestAttributes.getRequest().getRequestURI());
+
+        logRequest(stat, servletRequestAttributes.getRequest());
 
         if (trace.recordParams()) {
             stat.setAttribute(IStat.params, pjp.getArgs());
@@ -78,7 +83,7 @@ public class RequestMappingTracerAop {
             watch.stop();
 
             stat.setAttribute(IStat.level, "info");
-            if (trace.recordResult()) {
+            if (trace.recordResult() && result != null) {
                 //todo test null and void
                 stat.setAttribute(IStat.result, result);
             }
@@ -86,24 +91,31 @@ public class RequestMappingTracerAop {
         } catch (Exception e) {
             watch.stop();
             stat.setAttribute(IStat.level, "error");
-
-            //todo exception resolve
-
-            log.error("", e);
-            e.printStackTrace();
-
+            stat.setAttribute(IStat.error, ThrowableUtils.stackTrace(e));
             throw e;
         } finally {
 
             stat.setAttribute(IStat.startTime, watch.startTime());
             stat.setAttribute(IStat.elapsedTime, watch.elapsedTime());
-
+            stat.setAttribute(IStat.status, servletRequestAttributes.getResponse().getStatus());
             if (traceFromHere) {
                 sender.send(tracer);
                 ThreadLocalHolder.TRACER.remove();
             }
+
         }
 
+    }
+
+    private void logRequest(MapStat stat, HttpServletRequest request) {
+        if (request.getHeader("refer") != null) {
+            stat.setAttribute(IStat.refer, request.getHeader("refer"));
+        }
+        if (request.getQueryString() != null) {
+            stat.setAttribute(IStat.queryString, request.getQueryString());
+        }
+        stat.setAttribute(IStat.route, request.getRequestURI());
+        stat.setAttribute(IStat.client, IPUtils.getIpAddress(request));
     }
 
 }

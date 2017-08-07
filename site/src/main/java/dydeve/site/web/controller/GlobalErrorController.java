@@ -47,6 +47,7 @@ public class GlobalErrorController implements ErrorController {
         return this.errorPath;
     }
 
+    //todo send log monitor
     @RequestMapping(value = "${error.path:/error}", produces = "text/html")
     public ModelAndView errorHtml(HttpServletRequest request) {
         return new ModelAndView("error", getErrorAttributes(request, false));

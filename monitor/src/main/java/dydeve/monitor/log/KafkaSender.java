@@ -1,6 +1,7 @@
 package dydeve.monitor.log;
 
-import com.alibaba.fastjson.JSON;
+import dydeve.monitor.stat.IStat;
+import dydeve.monitor.stat.Tracer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.KafkaException;
@@ -42,11 +43,7 @@ public class KafkaSender {
         }
     }
 
-    //private static class
-
-
-
-    ExecutorService monitorPool = new ThreadPoolExecutor(
+    private static final ExecutorService monitorPool = new ThreadPoolExecutor(
             Math.min(4, NCPU),
             Math.min(4, NCPU),
             0L,
@@ -77,11 +74,25 @@ public class KafkaSender {
         });
     }
 
-    public void send(Object data) {
+    public <E, S extends IStat<E, String>> void send(Tracer<E, String, S> tracer) {
+        S stat = tracer.poll();
+        while (stat != null) {
+            stat.setAttribute(IStat.host, tracer.getHost());
+            stat.setAttribute(IStat.traceId, tracer.getTraceId());
+
+            send(tracer.getGroup().groupName, stat.snapShot().transfer());
+
+            stat = tracer.poll();
+        }
+    }
+
+    public void send(String topic, String value) {
+
         if (monitorProducer == null) {
             return;
         }
-        monitorPool.submit(new SendToKafkaTask(monitorProducer, "monitor", data));
+        monitorPool.submit(new SendToKafkaTask(monitorProducer, topic, value));
+
     }
 
 
@@ -89,17 +100,17 @@ public class KafkaSender {
 
         private Producer<String, String> producer;
         private String topic;
-        private Object data;
+        private String value;
 
-        SendToKafkaTask(Producer<String, String> producer, String topic, Object data) {
+        SendToKafkaTask(Producer<String, String> producer, String topic, String value) {
             this.producer = producer;
             this.topic = topic;
-            this.data = data;
+            this.value = value;
         }
 
         @Override
         public void run() {
-            send(producer, topic, JSON.toJSONString(data));
+            send(producer, topic, value);
         }
     }
 
@@ -113,7 +124,7 @@ public class KafkaSender {
      * @param data
      */
     public static void send(Producer<String, String> producer, String topic, String data) {
-        producer.send(new ProducerRecord<String, String>(topic, data));
+        producer.send(new ProducerRecord<>(topic, data));
     }
 
 }

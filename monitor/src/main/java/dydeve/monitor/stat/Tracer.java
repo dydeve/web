@@ -5,6 +5,7 @@ import dydeve.monitor.util.IntegerSequencer;
 import dydeve.monitor.util.Sequencer;
 import dydeve.monitor.util.Sequential;
 
+import java.util.Deque;
 import java.util.LinkedList;
 
 /**
@@ -23,11 +24,14 @@ public class Tracer<E, T, S extends IStat<E, T>> implements Sequential<Integer>{
 
     private IStatFactory<E, T, S> statFactory;
 
-    private LinkedList<S> stats;
+    private Deque<S> stats;
 
     private Sequencer<Integer> counter;
 
-    public Tracer(Group group, String traceId, String host, IStatFactory<E, T, S> statFactory) {
+    public Tracer(Group group,
+                  String traceId,
+                  String host,
+                  IStatFactory<E, T, S> statFactory) {
         this.group = group;
         this.traceId = traceId;
         this.host = host;
@@ -43,11 +47,8 @@ public class Tracer<E, T, S extends IStat<E, T>> implements Sequential<Integer>{
         return stat;
     }
 
-    public S popStat() {
-        if (stats.isEmpty()) {
-            return null;
-        }
-        return stats.pop();
+    public S poll() {
+        return stats.poll();
     }
 
     @Override
@@ -59,13 +60,32 @@ public class Tracer<E, T, S extends IStat<E, T>> implements Sequential<Integer>{
         return counter;
     }
 
+    public Group getGroup() {
+        return group;
+    }
+
+    public String getTraceId() {
+        return traceId;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
     public enum Group {
-        SITE,
-        PAY,
-        ELK,
-        FLUME,
-        STORM,
-        SPARK;
+        SITE("site"),
+        PAY("pay"),
+        ELK("elk"),
+        FLUME("flume"),
+        STORM("storm"),
+        SPARK("spark");
+
+        public final String groupName;
+
+        Group(String groupName) {
+            this.groupName = groupName;
+        }
+
     }
 
 }
