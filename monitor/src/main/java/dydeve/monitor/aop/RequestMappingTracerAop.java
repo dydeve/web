@@ -1,6 +1,6 @@
 package dydeve.monitor.aop;
 
-import dydeve.common.ThrowableUtils;
+import dydeve.common.util.ThrowableUtils;
 import dydeve.monitor.aop.annotation.Trace;
 import dydeve.monitor.holder.SingletonHolder;
 import dydeve.monitor.holder.ThreadLocalHolder;
@@ -20,9 +20,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Map;
 
 /**

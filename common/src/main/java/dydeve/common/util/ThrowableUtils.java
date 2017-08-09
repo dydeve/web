@@ -1,4 +1,4 @@
-package dydeve.common;
+package dydeve.common.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

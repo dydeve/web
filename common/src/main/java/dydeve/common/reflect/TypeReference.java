@@ -1,4 +1,4 @@
-package dydeve.common;
+package dydeve.common.reflect;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

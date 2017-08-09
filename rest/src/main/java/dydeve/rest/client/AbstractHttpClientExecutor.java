@@ -71,4 +71,6 @@ public abstract class AbstractHttpClientExecutor implements HttpClientExecutor {
         return execute(url, HttpMethod.GET, type, params);
     }
 
+
+
 }
