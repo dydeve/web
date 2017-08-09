@@ -1,12 +1,16 @@
 package dydeve.rest.client;
 
 import dydeve.common.util.CloseableUtils;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +94,13 @@ public class BaseHttpClientExecutor extends AbstractHttpClientExecutor {
     @Autowired
     private CloseableHttpClient httpClient;
 
+    /**
+     *
+     * @param url
+     * @param params
+     * @return
+     * @throws URISyntaxException
+     */
     public String get(String url, List<NameValuePair> params) throws URISyntaxException {
         HttpGet httpGet = new HttpGet();
 
@@ -110,44 +121,6 @@ public class BaseHttpClientExecutor extends AbstractHttpClientExecutor {
            CloseableUtils.closeQuietly(response);
         }
 
-    }
-
-    public static String response2String(CloseableHttpResponse response) {
-        if (response == null) {
-            return null;
-        }
-
-        try {
-            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                return EntityUtils.toString(response.getEntity());//ok close entity
-            }
-            EntityUtils.consume(response.getEntity());//error close entity
-            return null;
-        } catch (Exception e) {
-            log.error("Exception happens when resolveResponse to string", e);
-            return null;
-        } finally {
-            CloseableUtils.closeQuietly(response);
-        }
-    }
-
-    public static byte[] response2ByteArray(CloseableHttpResponse response) {
-        if (response == null) {
-            return null;
-        }
-
-        try {
-            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                return EntityUtils.toByteArray(response.getEntity());//ok close entity
-            }
-            EntityUtils.consume(response.getEntity());//error close entity
-            return null;
-        } catch (Exception e) {
-            log.error("Exception happens when resolveResponse to string", e);
-            return null;
-        } finally {
-            CloseableUtils.closeQuietly(response);
-        }
     }
 
 

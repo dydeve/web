@@ -22,6 +22,7 @@ import org.apache.http.impl.io.DefaultHttpResponseParserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -45,6 +46,7 @@ import java.util.concurrent.TimeUnit;
  * 如果连接池配置的较大，可以创建多个httpClient实例，而不是使用一个实例
  * 使用连接池时，尽快消费响应体并释放连接到连接池，不要保持太久
  */
+@EnableAutoConfiguration
 @Configuration
 public class HttpClientConfig {
 
