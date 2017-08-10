@@ -33,13 +33,13 @@ public class CommonResponseConsumer {
      * it has close stream or response
      * @param httpClient
      * @param httpRequest
-     * @param response
+     * @param handler
      * @param <T>
      * @return
      * @throws IOException
      */
-    public static <T> T returnObject(CloseableHttpClient httpClient, HttpUriRequest httpRequest, JsonResponseHandler<T> response) throws IOException {
-        return httpClient.execute(httpRequest, response);
+    public static <T> T returnObject(CloseableHttpClient httpClient, HttpUriRequest httpRequest, JsonResponseHandler<T> handler) throws IOException {
+        return httpClient.execute(httpRequest, handler);
     }
 
     public static String returnString(CloseableHttpClient httpClient, HttpUriRequest httpRequest) throws IOException {

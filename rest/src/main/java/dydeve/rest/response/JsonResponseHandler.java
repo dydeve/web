@@ -23,12 +23,16 @@ public class JsonResponseHandler<T> implements ResponseHandler<T> {
 
     protected final Type type;
 
-    public JsonResponseHandler(Class<T> clazz) {
+    protected JsonResponseHandler(Class<T> clazz) {
         this.type = clazz;
     }
 
-    public JsonResponseHandler(TypeReference<T> typeReference) {
+    protected JsonResponseHandler(TypeReference<T> typeReference) {
         this.type = typeReference.getType();
+    }
+
+    protected JsonResponseHandler(Type type) {
+        this.type = type;
     }
 
     /**

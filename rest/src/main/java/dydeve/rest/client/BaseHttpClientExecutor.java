@@ -3,10 +3,15 @@ package dydeve.rest.client;
 import dydeve.common.reflect.TypeReference;
 import dydeve.common.util.CloseableUtils;
 import dydeve.monitor.aop.Trace;
+import dydeve.rest.request.HttpRequestFactory;
 import dydeve.rest.response.CommonResponseConsumer;
+import dydeve.rest.response.JsonResponseHandler;
+import org.apache.http.Consts;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -17,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -94,51 +100,44 @@ public class BaseHttpClientExecutor extends AbstractHttpClientExecutor {
     private CloseableHttpClient httpClient;
 
 
+    public HttpUriRequest completedRequest(String url, HttpMethod httpMethod, List<NameValuePair> params) throws URISyntaxException, UnsupportedEncodingException {
 
-    /**
-     *
-     * @param url
-     * @param params
-     * @return
-     * @throws URISyntaxException
-     */
-    @Trace(description = "httpClientExecutor get")
-    public String get(String url, List<NameValuePair> params) throws URISyntaxException {
-        HttpGet httpGet = new HttpGet();
+        HttpUriRequest httpUriRequest = HttpRequestFactory.createHttpRequest(httpMethod);
 
-        if (params == null) {
-            httpGet.setURI(URI.create(url));
-        } else {
-            httpGet.setURI(new URIBuilder(url).addParameters(params).build());
+        if (HttpMethod.GET == httpMethod) {
+            URIBuilder uriBuilder = new URIBuilder(url);
+            if (params != null) {
+                uriBuilder.addParameters(params);
+            }
+            ((HttpGet) httpUriRequest).setURI(uriBuilder.build());
+            return httpUriRequest;
         }
 
-        CloseableHttpResponse response = null;
-        try {
-            response = httpClient.execute(httpGet);
-            return EntityUtils.toString(response.getEntity());
-        } catch (IOException e) {
-            log.error("IOException here, url:{}",url, e);
-            return null;
-        } finally {
-           CloseableUtils.closeQuietly(response);
+        if (HttpMethod.POST == httpMethod) {
+            ((HttpPost) httpUriRequest).setURI(URI.create(url));
+            if (params != null) {
+                UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
+                ((HttpPost) httpUriRequest).setEntity(entity);
+            }
+            return httpUriRequest;
         }
 
+        //ignore
+        throw new UnsupportedOperationException();
     }
 
-
-    public <T> T execute(String url, Class<T> responseClass, HttpMethod httpMethod, List<NameValuePair> params) {
-        if (responseClass == String.class) {
-            return null;
-        }
-        if (responseClass == byte[].class) {
-            return null;
-        }
-        return null;
+    public String produceString(String url, HttpMethod httpMethod, List<NameValuePair> params) throws IOException, URISyntaxException {
+        return CommonResponseConsumer.returnString(httpClient, completedRequest(url, httpMethod, params));
     }
 
-    public <T> T execute(String url, TypeReference<T> typeReference,  HttpMethod httpMethod, List<NameValuePair> params) {
-        return null;
+    public byte[] produceByteArray(String url, HttpMethod httpMethod, List<NameValuePair> params) throws IOException, URISyntaxException {
+        return CommonResponseConsumer.returnByteArray(httpClient, completedRequest(url, httpMethod, params));
     }
 
+    public <T> T produceObject(String url, HttpMethod httpMethod, List<NameValuePair> params, JsonResponseHandler<T> handler) throws IOException, URISyntaxException {
+        return CommonResponseConsumer.returnObject(httpClient,
+                completedRequest(url, httpMethod, params),
+                handler);
+    }
 
 }
