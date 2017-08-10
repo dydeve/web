@@ -1,7 +1,10 @@
 package dydeve.common.util;
 
+import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Map;
 
 /**
  * Created by yuduy on 2017/8/7.
@@ -12,6 +15,11 @@ public class ThrowableUtils {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @see DefaultErrorAttributes#addStackTrace(Map, Throwable)
+     * @param throwable
+     * @return
+     */
     public static String stackTrace(Throwable throwable) {
         StringWriter stackTrace = new StringWriter();
         throwable.printStackTrace(new PrintWriter(stackTrace));

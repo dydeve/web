@@ -1,16 +1,15 @@
 package dydeve.rest.client;
 
+import dydeve.common.reflect.TypeReference;
 import dydeve.common.util.CloseableUtils;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpStatus;
+import dydeve.monitor.aop.Trace;
+import dydeve.rest.response.CommonResponseConsumer;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,6 +93,8 @@ public class BaseHttpClientExecutor extends AbstractHttpClientExecutor {
     @Autowired
     private CloseableHttpClient httpClient;
 
+
+
     /**
      *
      * @param url
@@ -101,6 +102,7 @@ public class BaseHttpClientExecutor extends AbstractHttpClientExecutor {
      * @return
      * @throws URISyntaxException
      */
+    @Trace(description = "httpClientExecutor get")
     public String get(String url, List<NameValuePair> params) throws URISyntaxException {
         HttpGet httpGet = new HttpGet();
 
@@ -121,6 +123,21 @@ public class BaseHttpClientExecutor extends AbstractHttpClientExecutor {
            CloseableUtils.closeQuietly(response);
         }
 
+    }
+
+
+    public <T> T execute(String url, Class<T> responseClass, HttpMethod httpMethod, List<NameValuePair> params) {
+        if (responseClass == String.class) {
+            return null;
+        }
+        if (responseClass == byte[].class) {
+            return null;
+        }
+        return null;
+    }
+
+    public <T> T execute(String url, TypeReference<T> typeReference,  HttpMethod httpMethod, List<NameValuePair> params) {
+        return null;
     }
 
 

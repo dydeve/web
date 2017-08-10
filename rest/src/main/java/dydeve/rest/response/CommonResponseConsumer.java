@@ -7,6 +7,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.AbstractResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.HttpContext;
@@ -23,6 +24,32 @@ public class CommonResponseConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(CommonResponseConsumer.class);
 
+    private CommonResponseConsumer() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @see CloseableHttpClient#execute(HttpHost, HttpRequest, ResponseHandler, HttpContext)
+     * it has close stream or response
+     * @param httpClient
+     * @param httpRequest
+     * @param response
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
+    public static <T> T returnObject(CloseableHttpClient httpClient, HttpUriRequest httpRequest, JsonResponseHandler<T> response) throws IOException {
+        return httpClient.execute(httpRequest, response);
+    }
+
+    public static String returnString(CloseableHttpClient httpClient, HttpUriRequest httpRequest) throws IOException {
+        return CommonResponseConsumer.response2String(httpClient.execute(httpRequest));
+    }
+
+    public static byte[] returnByteArray(CloseableHttpClient httpClient, HttpUriRequest httpRequest) throws IOException {
+        return CommonResponseConsumer.response2ByteArray(httpClient.execute(httpRequest));
+    }
+
     /**
      * @see CloseableHttpClient#execute(HttpHost, HttpRequest, ResponseHandler, HttpContext)
      * @see AbstractResponseHandler#handleResponse(HttpResponse)
@@ -36,7 +63,12 @@ public class CommonResponseConsumer {
 
         try {
             if (response.getStatusLine().getStatusCode() / 100 == 2) {
-                return EntityUtils.toString(response.getEntity());//ok close entity
+                try {
+                    return EntityUtils.toString(response.getEntity());//ok close entity
+                } finally {
+                    EntityUtils.consume(response.getEntity());
+                }
+
             }
 
             EntityUtils.consume(response.getEntity());
@@ -59,7 +91,12 @@ public class CommonResponseConsumer {
 
         try {
             if (response.getStatusLine().getStatusCode() / 100 == 2) {
-                return EntityUtils.toByteArray(response.getEntity());//ok close entity
+                try {
+                    return EntityUtils.toByteArray(response.getEntity());//ok close entity
+                } finally {
+                    EntityUtils.consume(response.getEntity());
+                }
+
             }
             EntityUtils.consume(response.getEntity());
             throw new HttpResponseException(response.getStatusLine().getStatusCode(),

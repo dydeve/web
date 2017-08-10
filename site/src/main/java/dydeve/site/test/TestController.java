@@ -1,24 +1,21 @@
 package dydeve.site.test;
 
 import com.alibaba.fastjson.TypeReference;
+import dydeve.monitor.aop.Trace;
 import dydeve.monitor.util.IPUtils;
 import dydeve.site.web.exception.CustomServerException;
-import dydeve.site.web.handler.annotation.JsonBy;
 import dydeve.site.web.handler.annotation.RequestJson;
 import dydeve.site.web.handler.annotation.ResponseJson;
 import dydeve.site.web.handler.annotation.WebObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -33,6 +30,7 @@ import java.util.Map;
 //@JsonBy(JsonBy.GSON)
 public class TestController {
 
+    @Trace(description = "haha")
     @RequestMapping("/ok")
     @ResponseJson
     public Object ok(@WebObject(required = false) /*@Validated*/ A/*Map<String, String[]>*/ a, /*BindingResult result,*/ HttpServletRequest httpServletRequest) throws CustomServerException {

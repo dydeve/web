@@ -8,7 +8,7 @@
 入参校验
 
 
-远程调用 httpclient thrit dubbo cloud
+远程调用  异步 监控 httpclient thrit dubbo cloud
 
 #
 查缓存 用熔断，查库 频控
