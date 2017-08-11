@@ -28,11 +28,11 @@ public class StopWatcher {
 
     @Around(value = "stop(stopWatchHere)")
     public Object watch(ProceedingJoinPoint pjp, StopWatchHere stopWatchHere) throws Throwable {
-        /*String description;
-        if (stopWatchHere.description() != null) {
-            description = stopWatchHere.description();
+        /*String value;
+        if (stopWatchHere.value() != null) {
+            value = stopWatchHere.value();
         } else {
-            description = ((MethodSignature) pjp.getSignature()).getName();
+            value = ((MethodSignature) pjp.getSignature()).getName();
         }*/
 
         Object result;

@@ -10,24 +10,26 @@ import java.lang.annotation.*;
 @Documented
 public @interface Trace {
 
+    String NULL = "";
+
     /**
-     * description of traced method
+     * value of traced method
      *
      * @return
      */
-    String description();
+    String value() default NULL;
 
     /**
      * record params
      *
      * @return
      */
-    boolean recordParams() default false;
+    boolean recordParams() default true;
 
     /**
      * record result
      */
-    boolean recordResult() default false;
+    boolean recordResult() default true;
 
 
 

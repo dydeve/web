@@ -1,9 +1,14 @@
 package dydeve.rest.client;
 
+import dydeve.rest.request.NameValuePairs;
+import dydeve.rest.response.JsonResponseHandler;
 import org.apache.http.NameValuePair;
 import org.springframework.http.HttpMethod;
 
-import java.lang.reflect.Type;
+import java.beans.IntrospectionException;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
@@ -11,66 +16,81 @@ import java.util.Map;
  * Created by dy on 2017/8/8.
  */
 public abstract class AbstractHttpClientExecutor implements HttpClientExecutor {
+
     @Override
-    public <T> T get(String url, Class<T> clazz) {
-        return execute(url, HttpMethod.GET, clazz);
+    public String getString(String url, Object param) throws IllegalAccessException, IntrospectionException, InvocationTargetException, IOException, URISyntaxException {
+        return rtnString(url, HttpMethod.GET, param);
     }
 
     @Override
-    public <T> T get(String url, Type type) {
-        return execute(url, HttpMethod.GET, type);
+    public String getString(String url, Map<String, Object> params) throws IOException, URISyntaxException {
+        return rtnString(url, HttpMethod.GET, params);
     }
 
     @Override
-    public <T> T get(String url, Class<T> clazz, Object param) {
-        return execute(url, HttpMethod.GET, clazz, param);
+    public String getString(String url, List<NameValuePair> params) throws IOException, URISyntaxException {
+        return rtnString(url, HttpMethod.GET, params);
     }
 
     @Override
-    public <T> T get(String url, Type type, Object param) {
-        return execute(url, HttpMethod.GET, type, param);
+    public byte[] getByteArray(String url, Object param) throws IllegalAccessException, IntrospectionException, InvocationTargetException, IOException, URISyntaxException {
+        return rtnByteArray(url, HttpMethod.GET, param);
     }
 
     @Override
-    public <T> T get(String url, Class<T> clazz, Object... params) {
-        return execute(url, HttpMethod.GET, clazz, params);
+    public byte[] getByteArray(String url, Map<String, Object> params) throws IllegalAccessException, IntrospectionException, InvocationTargetException, IOException, URISyntaxException {
+        return rtnByteArray(url, HttpMethod.GET, params);
     }
 
     @Override
-    public <T> T get(String url, Type type, Object... params) {
-        return execute(url, HttpMethod.GET, type, params);
+    public byte[] getByteArray(String url, List<NameValuePair> params) throws IOException, URISyntaxException {
+        return rtnByteArray(url, HttpMethod.GET, params);
     }
 
     @Override
-    public <T> T get(String url, Class<T> clazz, Map<String, Object> params) {
-        return execute(url, HttpMethod.GET, clazz, params);
+    public <T> T getObject(String url, Object param, JsonResponseHandler<T> handler) throws IOException, URISyntaxException, IllegalAccessException, IntrospectionException, InvocationTargetException {
+        return rtnObject(url, HttpMethod.GET, param, handler);
     }
 
     @Override
-    public <T> T get(String url, Type type, Map<String, Object> params) {
-        return execute(url, HttpMethod.GET, type, params);
+    public <T> T getObject(String url, Map<String, Object> params, JsonResponseHandler<T> handler) throws IOException, URISyntaxException {
+        return rtnObject(url, HttpMethod.GET, params, handler);
     }
 
     @Override
-    public <T> T get(String url, Class<T> clazz, NameValuePair... params) {
-        return execute(url, HttpMethod.GET, clazz, params);
-    }
-
-    @Override
-    public <T> T get(String url, Type type, NameValuePair... params) {
-        return execute(url, HttpMethod.GET, type, params);
-    }
-
-    @Override
-    public <T> T get(String url, Class<T> clazz, List<NameValuePair> params) {
-        return execute(url, HttpMethod.GET, clazz, params);
-    }
-
-    @Override
-    public <T> T get(String url, Type type, List<NameValuePair> params) {
-        return execute(url, HttpMethod.GET, type, params);
+    public <T> T getObject(String url, List<NameValuePair> params, JsonResponseHandler<T> handler) throws IOException, URISyntaxException {
+        return rtnObject(url, HttpMethod.GET, params, handler);
     }
 
 
 
+    @Override
+    public String rtnString(String url, HttpMethod httpMethod, Object param) throws IllegalAccessException, IntrospectionException, InvocationTargetException, IOException, URISyntaxException {
+        return rtnString(url, httpMethod, NameValuePairs.fromObject(param));
+    }
+
+    @Override
+    public String rtnString(String url, HttpMethod httpMethod, Map<String, Object> params) throws IOException, URISyntaxException {
+        return rtnString(url, httpMethod, NameValuePairs.fromMap(params));
+    }
+
+    @Override
+    public byte[] rtnByteArray(String url, HttpMethod httpMethod, Object param) throws IllegalAccessException, IntrospectionException, InvocationTargetException, IOException, URISyntaxException {
+        return rtnByteArray(url, httpMethod, NameValuePairs.fromObject(param));
+    }
+
+    @Override
+    public byte[] rtnByteArray(String url, HttpMethod httpMethod, Map<String, Object> params) throws IllegalAccessException, IntrospectionException, InvocationTargetException, IOException, URISyntaxException {
+        return rtnByteArray(url, httpMethod, NameValuePairs.fromMap(params));
+    }
+
+    @Override
+    public <T> T rtnObject(String url, HttpMethod httpMethod, Object param, JsonResponseHandler<T> handler) throws IOException, URISyntaxException, IllegalAccessException, IntrospectionException, InvocationTargetException {
+        return rtnObject(url, httpMethod, NameValuePairs.fromObject(param), handler);
+    }
+
+    @Override
+    public <T> T rtnObject(String url, HttpMethod httpMethod, Map<String, Object> params, JsonResponseHandler<T> handler) throws IOException, URISyntaxException {
+        return rtnObject(url, httpMethod, NameValuePairs.fromMap(params), handler);
+    }
 }

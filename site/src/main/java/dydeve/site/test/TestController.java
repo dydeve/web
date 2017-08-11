@@ -30,7 +30,7 @@ import java.util.Map;
 //@JsonBy(JsonBy.GSON)
 public class TestController {
 
-    @Trace(description = "haha")
+    @Trace(value = "haha")
     @RequestMapping("/ok")
     @ResponseJson
     public Object ok(@WebObject(required = false) /*@Validated*/ A/*Map<String, String[]>*/ a, /*BindingResult result,*/ HttpServletRequest httpServletRequest) throws CustomServerException {

@@ -1,5 +1,7 @@
 package dydeve.rest.config;
 
+import dydeve.rest.client.BaseHttpClientExecutor;
+import dydeve.rest.client.HttpClientExecutor;
 import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -53,7 +55,7 @@ public class HttpClientConfig {
     private static final Logger log = LoggerFactory.getLogger(HttpClientConfig.class);
 
     @Bean(name = "defaultHttpClientConnectionManager")//配置可以更灵活
-    public HttpClientConnectionManager poolingHttpClientConnectionManager() {
+    public HttpClientConnectionManager defaultHttpClientConnectionManager() {
         //注册访问协议相关工厂
         Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
                 .register("http", PlainConnectionSocketFactory.INSTANCE)
@@ -152,6 +154,12 @@ public class HttpClientConfig {
         FutureRequestExecutionService futureRequestExecutionService =
                 new FutureRequestExecutionService(httpClient, executorService);
         return futureRequestExecutionService;
+    }
+
+    @Bean
+    public HttpClientExecutor httpClientExecutor(CloseableHttpClient closeableHttpClient) {
+        HttpClientExecutor httpClientExecutor = new BaseHttpClientExecutor(closeableHttpClient);
+        return httpClientExecutor;
     }
 
     /*public static void consume() throws IOException {

@@ -41,7 +41,11 @@ public class CommonTracerAop extends AbstractTracerAop{
 
     @Around(value = "commonTrace(trace)")
     public Object traceAround(ProceedingJoinPoint pjp, Trace trace) throws Throwable {
-        return handle(pjp, trace.description(), trace.recordParams(), trace.recordResult());
+        return handle(
+                pjp,
+                trace.value() == Trace.NULL ? ((MethodSignature) pjp.getSignature()).getMethod().getName(): trace.value(),
+                trace.recordParams(),
+                trace.recordResult());
     }
 
     private Object handle(ProceedingJoinPoint pjp, String description, boolean recordParams, boolean recordResult) throws Throwable {
