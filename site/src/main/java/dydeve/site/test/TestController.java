@@ -7,6 +7,11 @@ import dydeve.site.web.exception.CustomServerException;
 import dydeve.site.web.handler.annotation.RequestJson;
 import dydeve.site.web.handler.annotation.ResponseJson;
 import dydeve.site.web.handler.annotation.WebObject;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -17,11 +22,14 @@ import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
+import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Created by dy on 2017/7/21.
@@ -64,6 +72,27 @@ public class TestController {
         }
         Object b = a;
         return a;
+    }
+
+    @Autowired
+    private CloseableHttpAsyncClient httpAsyncClient;
+
+    @RequestMapping("/haha")
+    public String aaaa() {
+        HttpGet httpGet = new HttpGet("http://httpbin.org/");
+        Future<HttpResponse> future = httpAsyncClient.execute(httpGet, null);
+        try {
+            HttpResponse httpResponse = future.get();
+            String a = EntityUtils.toString(httpResponse.getEntity());
+            return a;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @RequestMapping("/")

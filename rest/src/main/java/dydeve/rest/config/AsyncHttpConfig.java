@@ -99,7 +99,7 @@ public class AsyncHttpConfig {
         CloseableHttpAsyncClient httpclient = HttpAsyncClients.custom()
                 .setConnectionManager(connManager)
                 .build();
-
+        httpclient.start();
         return httpclient;
     }
 
