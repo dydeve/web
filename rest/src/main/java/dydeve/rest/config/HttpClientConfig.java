@@ -2,6 +2,8 @@ package dydeve.rest.config;
 
 import dydeve.rest.client.BaseHttpClientExecutor;
 import dydeve.rest.client.HttpClientExecutor;
+import dydeve.rest.client.HystrixCommandHttpClientExecutor;
+import dydeve.rest.client.HystrixCommandHttpClientExecutorCore;
 import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -160,6 +162,12 @@ public class HttpClientConfig {
     public HttpClientExecutor httpClientExecutor(CloseableHttpClient closeableHttpClient) {
         HttpClientExecutor httpClientExecutor = new BaseHttpClientExecutor(closeableHttpClient);
         return httpClientExecutor;
+    }
+
+    @Bean
+    public HystrixCommandHttpClientExecutorCore HystrixCommandHttpClientExecutorCore(HttpClientExecutor httpClientExecutor) {
+        HystrixCommandHttpClientExecutor hystrixCommandHttpClientExecutor = new HystrixCommandHttpClientExecutor(httpClientExecutor);
+        return hystrixCommandHttpClientExecutor;
     }
 
     /*public static void consume() throws IOException {

@@ -3,9 +3,9 @@ package dydeve.rest.client;
 import dydeve.monitor.aop.Trace;
 import dydeve.rest.request.HttpRequestFactory;
 import dydeve.rest.response.CommonResponseConsumer;
-import dydeve.rest.response.JsonResponseHandler;
 import org.apache.http.Consts;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.http.HttpMethod;
@@ -43,7 +43,7 @@ public class BaseHttpClientExecutor extends AbstractHttpClientExecutor implement
 
     @Trace
     @Override
-    public <T> T rtnObject(String url, HttpMethod httpMethod, List<NameValuePair> params, JsonResponseHandler<T> handler) throws IOException, URISyntaxException {
+    public <T> T rtnObject(String url, HttpMethod httpMethod, List<NameValuePair> params, ResponseHandler<T> handler) throws IOException, URISyntaxException {
         return CommonResponseConsumer.returnObject(
                 httpClient,
                 HttpRequestFactory.completedRequest(url, httpMethod, params, Consts.UTF_8),

@@ -1,4 +1,4 @@
 dependencies {
-    compile group: 'com.netflix.hystrix', name: 'hystrix-core', version: '1.5.12'
+    compile group: 'com.netflix.hystrix', name: 'hystrix-examples', version: '1.5.13'
 
 }

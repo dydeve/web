@@ -38,7 +38,7 @@ public class CommonResponseConsumer {
      * @return
      * @throws IOException
      */
-    public static <T> T returnObject(CloseableHttpClient httpClient, HttpUriRequest httpRequest, JsonResponseHandler<T> handler) throws IOException {
+    public static <T> T returnObject(CloseableHttpClient httpClient, HttpUriRequest httpRequest, ResponseHandler<T> handler) throws IOException {
         return httpClient.execute(httpRequest, handler);
     }
 
