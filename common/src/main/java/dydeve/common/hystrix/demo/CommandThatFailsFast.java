@@ -53,13 +53,14 @@ public class CommandThatFailsFast extends HystrixCommand<String> {
         }
     }
 
-    @Override
+    /*@Override
     protected String getFallback() {
+//        int a = 1 / 0;
         return a();
-    }
+    }*/
 
     private String a() {
-        throw new UnsupportedOperationException("No fallback available.");
+        throw new NullPointerException("haha available.");
     }
 
     @Override
