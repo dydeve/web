@@ -16,10 +16,12 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * https://my.oschina.net/zudajun/blog/738973
  * http://www.jianshu.com/p/2222257f96d3
+ * @see org.apache.ibatis.binding.MapperMethod
  * Created by dy on 2017/8/20.
  */
 @Intercepts({
@@ -32,7 +34,7 @@ public class DynamicDataSourceInterceptor implements Interceptor {
 
     private static final String REGEX = ".*insert\\u0020.*|.*delete\\u0020.*|.*update\\u0020.*";
 
-    private static final Map<String, DynamicDataSourceGlobal> cacheMap = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<String, DynamicDataSourceGlobal> cacheMap = new ConcurrentHashMap<>();
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
@@ -40,11 +42,32 @@ public class DynamicDataSourceInterceptor implements Interceptor {
         boolean synchronizationActive = TransactionSynchronizationManager.isSynchronizationActive();
         if(!synchronizationActive) {
             Object[] objects = invocation.getArgs();
-            MappedStatement ms = (MappedStatement) objects[0];
+            MappedStatement mappedStatement = (MappedStatement) objects[0];
 
             DynamicDataSourceGlobal dynamicDataSourceGlobal = null;
 
             if((dynamicDataSourceGlobal = cacheMap.get(ms.getId())) == null) {
+
+                switch (mappedStatement.getSqlCommandType()) {
+                    case SELECT:
+                    case INSERT:
+                    case UPDATE:
+                    case DELETE:
+                }
+
+                if (mappedStatement.getSqlCommandType() == SqlCommandType.SELECT) {
+
+                } else if (mappedStatement.getSqlCommandType() == SqlCommandType.INSERT) {
+
+                } else if (mappedStatement.getSqlCommandType() == SqlCommandType.UPDATE) {
+
+                } else if (mappedStatement.getSqlCommandType() == SqlCommandType.DELETE) {
+
+                } else {
+
+                }
+
+
                 //读方法
                 if(ms.getSqlCommandType().equals(SqlCommandType.SELECT)) {
                     //!selectKey 为自增id查询主键(SELECT LAST_INSERT_ID() )方法，使用主库
