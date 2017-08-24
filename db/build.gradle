@@ -10,6 +10,12 @@ dependencies {
     compile group: 'com.alibaba', name: 'druid', version: '1.1.1'
 
 //    compile group: 'com.dangdang', name: 'sharding-jdbc-core', version: '1.5.1'
+    compile group: 'com.atomikos', name: 'atomikos-util', version: '4.0.4'
+    compile group: 'com.atomikos', name: 'transactions-jta', version: '4.0.4'
+    compile group: 'com.atomikos', name: 'transactions-jms', version: '4.0.4'
+    compile group: 'com.atomikos', name: 'transactions-osgi', version: '4.0.4'
+    compile group: 'com.atomikos', name: 'transactions-api', version: '4.0.4'
+    compile group: 'com.atomikos', name: 'atomikos-util', version: '4.0.4'
 
     testCompile "com.h2database:h2:1.4.187"
 }

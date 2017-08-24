@@ -24,11 +24,11 @@ public class Application {
     }*/
 
     //@Qualifier("transactionManager")
-    @Bean
+    /*@Bean
     public Object testBean(DataSourceTransactionManager platformTransactionManager){
         System.out.println(">>>>>>>>>>" + platformTransactionManager.getClass().getName());
         return new Object();
-    }
+    }*/
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
