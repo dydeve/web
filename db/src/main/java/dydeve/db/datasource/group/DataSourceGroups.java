@@ -1,8 +1,7 @@
-package dydeve.db.datasource;
+package dydeve.db.datasource.group;
 
-import com.google.common.collect.Maps;
-
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Created by dy on 2017/8/20.
@@ -12,7 +11,7 @@ public class DataSourceGroups {
     /**
      * 顺序很重要
      */
-    private static final Map<String, DataSourceGroup> dataSourceGroups = Maps.newLinkedHashMap();
+    private static final ConcurrentMap<String, DataSourceGroup> dataSourceGroups = new ConcurrentHashMap<>();
 
     public void setDataSourceGroup(String groupId, DataSourceGroup dataSourceGroup) {
         dataSourceGroups.put(groupId, dataSourceGroup);

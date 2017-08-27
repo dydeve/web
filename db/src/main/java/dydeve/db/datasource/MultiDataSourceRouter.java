@@ -1,27 +1,15 @@
 package dydeve.db.datasource;
 
+import dydeve.db.holder.DataSourceKeyHolder;
 import org.springframework.core.Constants;
-import org.springframework.jdbc.datasource.AbstractDataSource;
-import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-
-import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * Created by dy on 2017/8/20.
  */
-public class MultiDataSourceRouter extends AbstractRoutingDataSource {
+public class MultiDataSourceRouter extends AbstractRoutingIdedDataSource<String, String, IdedDataSource> {
 
-
-
-
-    @Override
-    protected Object determineCurrentLookupKey() {
-        return null;
-    }
 
     /** Constants instance for TransactionDefinition */
     private static final Constants constants = new Constants(TransactionDefinition.class);
@@ -48,6 +36,21 @@ public class MultiDataSourceRouter extends AbstractRoutingDataSource {
             throw new IllegalArgumentException(
                     "Invalid lookup key - needs to be isolation level Integer or isolation level name String: " + lookupKey);
         }
+    }
+
+    @Override
+    protected String determineCurrentLookupRow() {
+        return DataSourceKeyHolder.getGroupId();
+    }
+
+    @Override
+    protected String determineCurrentLookupColumn() {
+        return DataSourceKeyHolder.getDataSourceId();
+    }
+
+    @Override
+    public String getDataSourceId() {
+        return determineCurrentLookupColumn();
     }
 
     /*@Override
