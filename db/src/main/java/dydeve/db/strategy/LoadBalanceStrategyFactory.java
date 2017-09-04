@@ -6,14 +6,14 @@ import java.util.function.Supplier;
 /**
  * Created by dy on 2017/8/31.
  */
-public class LoadBalanceStrategyFactory<T> {
+public class LoadBalanceStrategyFactory<S, T extends LoadBalanceStrategy<S>> {
 
-    public LoadBalanceStrategy<T> generate(List<T> sources, Supplier<LoadBalanceStrategy<T>> supplier) {
+    public T generate(List<S> sources, Supplier<T> supplier) {
         if (sources == null || sources.isEmpty()) {
             throw new IllegalArgumentException("source can't be empty");
         }
         if (sources.size() == 1) {
-            return new SingleLoadBalanceStrategy<T>(sources);
+            return (T) new SingleLoadBalanceStrategy(sources);
         }
         return supplier.get();
     }
